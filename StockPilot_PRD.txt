@@ -1,0 +1,3060 @@
+================================================================================
+STOCKPILOT — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+AI-Powered Autonomous Inventory Management Platform
+================================================================================
+Version: 1.0
+Status: Implementation-Ready
+Document Type: Full Product Requirements Document
+Audience: Engineering, Design, QA, DevOps, Product
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+1.  Product Vision & Mission
+2.  Target Users & Personas
+3.  Tech Stack & Technology Interactions
+4.  System Architecture
+5.  Application Navigation
+6.  Screen-by-Screen Requirements
+    6.1   Authentication
+    6.2   Dashboard
+    6.3   Product Management
+    6.4   Inventory Stock View
+    6.5   Warehouse Management
+    6.6   Location Management
+    6.7   Receipts (Incoming)
+    6.8   Delivery Orders (Outgoing)
+    6.9   Move History
+    6.10  Visual Warehouse Map
+    6.11  Automation Rules
+    6.12  AI Assistant
+    6.13  Natural Language Commands
+7.  Demand Prediction Module
+8.  Database Schema
+9.  API Design
+10. Security Design
+11. Deployment Strategy
+12. Development Roadmap (48-Hour Hackathon Plan)
+
+================================================================================
+1. PRODUCT VISION & MISSION
+================================================================================
+
+PRODUCT NAME:    StockPilot
+TAGLINE:         AI-Powered Autonomous Inventory Management Platform
+
+--------------------------------------------------------------------------------
+1.1 VISION STATEMENT
+--------------------------------------------------------------------------------
+
+StockPilot aims to become the operating system for modern warehouse operations.
+It replaces fragmented, manual systems such as spreadsheets and paper logs with
+a unified, intelligent platform that gives warehouse teams real-time visibility,
+predictive intelligence, and the ability to control inventory using natural
+language.
+
+The platform eliminates guesswork in stock management by combining real-time
+tracking with machine learning forecasting, automation rules, and a conversational
+AI assistant — enabling businesses to reduce stockouts, minimize overstock, and
+optimize warehouse space utilization.
+
+--------------------------------------------------------------------------------
+1.2 MISSION
+--------------------------------------------------------------------------------
+
+To make inventory management as simple as having a conversation, as intelligent
+as a data scientist, and as reliable as an enterprise ERP — for businesses of
+all sizes.
+
+--------------------------------------------------------------------------------
+1.3 CORE VALUE PROPOSITIONS
+--------------------------------------------------------------------------------
+
+a) Real-Time Visibility       — Know exactly what stock exists, where it sits,
+                                and how it is moving at all times.
+
+b) AI-Driven Decisions        — Predictive demand forecasting and reorder
+                                suggestions powered by machine learning.
+
+c) Natural Language Control   — Execute complex inventory operations by typing
+                                plain English commands.
+
+d) Automation                 — Rules-based background workers handle reorder
+                                triggers, slow-moving item detection, and alerts
+                                without human intervention.
+
+e) Visual Warehouse Layout    — Interactive grid map of every rack, shelf, and
+                                zone with color-coded utilization indicators.
+
+f) Audit Trail                — Every stock movement, command, and automation
+                                action is logged with timestamps and user context.
+
+================================================================================
+2. TARGET USERS & PERSONAS
+================================================================================
+
+--------------------------------------------------------------------------------
+PERSONA 1 — INVENTORY MANAGER
+--------------------------------------------------------------------------------
+
+NAME:             Ravi Shah
+ROLE:             Inventory Manager
+EXPERIENCE:       5+ years in warehouse and supply chain operations
+COMPANY SIZE:     Mid-size manufacturing or distribution company
+
+RESPONSIBILITIES:
+  - Maintain accurate stock counts across products, locations, and warehouses
+  - Define reorder levels and safety stock thresholds
+  - Approve incoming receipts and validate outgoing deliveries
+  - Generate inventory reports for management
+  - Configure automation rules for reorder triggers
+  - Reconcile physical stock vs system records
+
+TYPICAL TASKS IN STOCKPILOT:
+  - Review dashboard every morning for low-stock alerts and pending operations
+  - Open AI Assistant to query "What products are below reorder level today?"
+  - Approve receipt orders from suppliers
+  - Run demand forecasts to plan next quarter's purchasing
+  - Configure automation rules (e.g., auto-flag items with no movement for 30 days)
+  - Adjust stock quantities when physical counts reveal discrepancies
+
+PAIN POINTS SOLVED:
+  - No more spreadsheet reconciliation
+  - Instant low-stock alerts instead of discovering problems at stockout
+  - Automated demand forecasting instead of manual trend analysis
+
+--------------------------------------------------------------------------------
+PERSONA 2 — WAREHOUSE STAFF
+--------------------------------------------------------------------------------
+
+NAME:             Priya Mehta
+ROLE:             Warehouse Operator / Picker-Packer
+EXPERIENCE:       1–3 years warehouse operations
+DEVICE USED:      Tablet or desktop workstation on the warehouse floor
+
+RESPONSIBILITIES:
+  - Receive incoming goods and update receipt records
+  - Pick items for delivery orders
+  - Move products between warehouse locations
+  - Scan and confirm stock movements
+
+TYPICAL TASKS IN STOCKPILOT:
+  - Open Receipts screen to confirm incoming shipments
+  - Use Visual Warehouse Map to locate products by rack/shelf
+  - Validate delivery orders and mark them as Done
+  - Use natural language commands: "Receive 50 units of SKU-001 from Supplier X"
+  - Check Move History to verify yesterday's movements
+
+PAIN POINTS SOLVED:
+  - No need to walk to office to check inventory location
+  - Visual rack map eliminates manual location lookup
+  - Natural language reduces training time for new staff
+
+--------------------------------------------------------------------------------
+PERSONA 3 — OPERATIONS MANAGER
+--------------------------------------------------------------------------------
+
+NAME:             Anjali Desai
+ROLE:             Head of Operations / Supply Chain Director
+EXPERIENCE:       10+ years in operations management
+DEVICE USED:      Desktop, occasionally mobile
+
+RESPONSIBILITIES:
+  - Strategic oversight of inventory health and warehouse performance
+  - Monitor KPIs: stockout rate, turnover ratio, warehouse utilization
+  - Approve high-value purchase decisions based on demand forecasts
+  - Set company-wide inventory policies
+  - Review audit logs for compliance and accountability
+
+TYPICAL TASKS IN STOCKPILOT:
+  - Review Dashboard KPI widgets and trend charts
+  - Query AI Assistant for executive summaries: "What is our warehouse utilization?"
+  - Review Automation Rules and adjust thresholds
+  - Export move history reports for monthly review
+  - Monitor demand prediction graphs by product category
+
+PAIN POINTS SOLVED:
+  - Single source of truth for all inventory data
+  - Executive-level summaries via AI assistant
+  - Proactive demand forecasting prevents supply disruptions
+
+================================================================================
+3. TECH STACK & TECHNOLOGY INTERACTIONS
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1 TECHNOLOGY COMPONENTS
+--------------------------------------------------------------------------------
+
+FRONTEND:
+  Framework:       Next.js 14 (App Router)
+  UI Library:      React 18
+  Styling:         TailwindCSS 3
+  Component Kit:   Shadcn UI (built on Radix UI primitives)
+  State Mgmt:      Zustand or React Context
+  Data Fetching:   SWR / React Query
+  Charts:          Recharts or Nivo
+  Icons:           Lucide React
+
+BACKEND:
+  Runtime:         Next.js API Routes (serverless functions on Vercel)
+  Language:        TypeScript
+  ORM/DB Client:   Supabase JS Client
+  Auth Middleware: Supabase Auth helpers for Next.js
+  Background Jobs: BullMQ (Redis-backed) on Render/Railway
+
+DATABASE & AUTH:
+  Provider:        Supabase
+  Engine:          PostgreSQL 15
+  Auth:            Supabase Auth (JWT-based, email/password)
+  Storage:         Supabase Storage (for any file attachments)
+  Realtime:        Supabase Realtime subscriptions for live dashboard updates
+
+AI ASSISTANT:
+  Provider:        Grok API (xAI)
+  Model:           grok-beta or grok-2
+  Architecture:    RAG (Retrieval-Augmented Generation)
+  Vector Store:    FAISS (Python service)
+  Embeddings:      Sentence Transformers (all-MiniLM-L6-v2)
+
+ML PREDICTION SERVICE:
+  Language:        Python 3.11
+  Framework:       FastAPI
+  Libraries:       scikit-learn, Prophet (Facebook), pandas, numpy
+  Deployment:      Render (background service)
+
+VECTOR DATABASE:
+  Engine:          FAISS (Facebook AI Similarity Search)
+  Purpose:         Store embeddings of inventory records, logs, and product data
+                   for semantic search by the AI assistant
+
+DEPLOYMENT:
+  Frontend:        Vercel (automatic CI/CD from GitHub)
+  Backend APIs:    Vercel serverless (co-located with Next.js)
+  ML Service:      Render (Python FastAPI container)
+  Job Workers:     Railway or Render (Node.js BullMQ workers)
+  Database:        Supabase (managed PostgreSQL)
+  Cache/Queue:     Redis via Railway
+
+--------------------------------------------------------------------------------
+3.2 HOW TECHNOLOGIES INTERACT
+--------------------------------------------------------------------------------
+
+REQUEST FLOW — USER QUERIES INVENTORY:
+
+  [Browser/Next.js App]
+       |
+       | HTTP Request
+       v
+  [Next.js API Route] (/api/inventory)
+       |
+       | Supabase JS Client
+       v
+  [Supabase PostgreSQL]
+       |
+       | Returns rows
+       v
+  [Next.js API Route] — formats JSON response
+       |
+       v
+  [React Component] — renders table/chart
+
+REQUEST FLOW — AI ASSISTANT QUERY:
+
+  [User types question in AI Chat]
+       |
+       v
+  [Next.js API Route] (/api/ai/query)
+       |
+       |--- Supabase: fetch relevant inventory context (recent moves, stock levels)
+       |--- FAISS Service: retrieve semantically similar historical records (RAG)
+       |
+       v
+  [Grok API] — receives context + question → generates response
+       |
+       v
+  [AI Assistant UI] — streams response to user
+
+REQUEST FLOW — AUTOMATION RULES:
+
+  [BullMQ Cron Worker] — runs every 15 minutes
+       |
+       | Reads automation_rules table
+       v
+  [Rule Evaluator] — checks conditions against live Supabase data
+       |
+       | If condition met:
+       v
+  [Action Executor] — creates alert / sends notification / marks item
+       |
+       v
+  [ai_action_logs table] — records execution for audit
+
+REQUEST FLOW — DEMAND PREDICTION:
+
+  [Operations Manager requests forecast]
+       |
+       v
+  [Next.js API] → calls Python FastAPI service on Render
+       |
+       v
+  [Prophet/scikit-learn model] — loads historical delivery data from Supabase
+       |
+       v
+  [Returns forecast JSON] → displayed as chart in dashboard
+
+================================================================================
+4. SYSTEM ARCHITECTURE
+================================================================================
+
+--------------------------------------------------------------------------------
+4.1 LAYER OVERVIEW
+--------------------------------------------------------------------------------
+
+LAYER 1: FRONTEND (Presentation Layer)
+  - Next.js App Router with server and client components
+  - Shadcn UI components for consistent design system
+  - TailwindCSS for utility-first styling
+  - Supabase Realtime for live updates on dashboard widgets
+  - Client-side state management for optimistic UI updates
+
+LAYER 2: API LAYER (Next.js API Routes)
+  - RESTful API endpoints under /api/*
+  - Middleware for JWT validation via Supabase Auth
+  - Role-based access control (RBAC) enforcement
+  - Request validation using Zod schemas
+  - Rate limiting per user/IP
+
+LAYER 3: DATABASE LAYER (Supabase / PostgreSQL)
+  - PostgreSQL schemas for all business entities
+  - Row-Level Security (RLS) policies enforced at DB level
+  - Triggers for automatic reference number generation
+  - Functions for stock calculation queries
+  - Supabase Realtime channels for live subscriptions
+
+LAYER 4: AUTOMATION ENGINE (Background Workers)
+  - BullMQ worker processes running on Railway
+  - Cron-based rule evaluation (every 15 minutes)
+  - Event-driven triggers for stock threshold breaches
+  - Email/webhook notification dispatch
+
+LAYER 5: AI SERVICES
+  - FAISS vector index service (Python FastAPI on Render)
+  - Grok API integration for natural language processing
+  - Prophet/scikit-learn prediction service (Python FastAPI on Render)
+  - Embedding generation pipeline for new inventory records
+
+--------------------------------------------------------------------------------
+4.2 DATA FLOW DIAGRAM (TEXT REPRESENTATION)
+--------------------------------------------------------------------------------
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                        BROWSER (Next.js Frontend)                    │
+│  Dashboard | Products | Inventory | Warehouses | AI Chat | ...       │
+└───────────────────────┬─────────────────────────────────────────────┘
+                        │ HTTPS / WebSocket
+┌───────────────────────▼─────────────────────────────────────────────┐
+│                   NEXT.JS API ROUTES (Vercel)                        │
+│  /api/auth  /api/products  /api/receipts  /api/ai  /api/forecast    │
+└──────┬────────────────┬──────────────────┬──────────────────────────┘
+       │                │                  │
+┌──────▼──────┐  ┌──────▼──────┐  ┌───────▼────────┐
+│  SUPABASE   │  │  GROK API   │  │  PYTHON FAISS  │
+│ PostgreSQL  │  │  (xAI LLM)  │  │  Vector Search │
+│ + Auth      │  └─────────────┘  └────────────────┘
+│ + Realtime  │
+└──────┬──────┘  ┌─────────────────────────────────┐
+       │         │  PYTHON ML SERVICE (Render)       │
+       └────────►│  Prophet + scikit-learn Forecast  │
+                 └─────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────┐
+│              BULLMQ WORKERS (Railway) — Background Jobs              │
+│  Automation Rule Evaluator | Notification Dispatcher                 │
+└──────────────────────────────────────────────────────────────────────┘
+
+--------------------------------------------------------------------------------
+4.3 SECURITY PERIMETER
+--------------------------------------------------------------------------------
+
+- All API routes protected by Supabase JWT verification
+- Row-Level Security (RLS) at PostgreSQL layer as defense-in-depth
+- AI command execution requires explicit user confirmation step
+- All state-changing operations write to audit log table
+- CORS restricted to known frontend origins
+- Environment variables managed via Vercel / Railway secret management
+
+================================================================================
+5. APPLICATION NAVIGATION
+================================================================================
+
+SIDEBAR NAVIGATION STRUCTURE:
+
+  ├── Dashboard              /dashboard
+  ├── Products               /products
+  ├── Inventory              /inventory
+  ├── Operations
+  │   ├── Receipts           /operations/receipts
+  │   └── Deliveries         /operations/deliveries
+  ├── Warehouses             /warehouses
+  ├── Locations              /locations
+  ├── Move History           /move-history
+  ├── Automation             /automation
+  ├── AI Assistant           /ai-assistant
+  ├── Settings               /settings
+  └── User Profile           /profile
+
+NAVIGATION BEHAVIOR:
+  - Persistent left sidebar on desktop
+  - Collapsible sidebar with icon-only mode
+  - Bottom tab bar on mobile (Dashboard, Inventory, Operations, AI, Profile)
+  - Active route highlighted with accent color
+  - Role-based navigation visibility (e.g., Settings only for Admins)
+
+================================================================================
+6. SCREEN-BY-SCREEN REQUIREMENTS
+================================================================================
+
+================================================================================
+6.1 SCREEN: AUTHENTICATION
+================================================================================
+
+ROUTES: /login  /signup  /forgot-password
+
+--------------------------------------------------------------------------------
+LOGIN SCREEN
+--------------------------------------------------------------------------------
+
+UI LAYOUT:
+  - Centered card on gradient background
+  - StockPilot logo at top
+  - Form below logo
+
+FIELDS:
+  Name:     Email
+  Type:     email input
+  Validation: required, valid email format
+
+  Name:     Password
+  Type:     password input (masked, toggle visibility icon)
+  Validation: required, minimum 8 characters
+
+BUTTONS:
+  [Login]          — primary CTA, submits form
+  [Forgot Password] — navigates to /forgot-password
+
+ERROR STATES:
+  - "Invalid email or password" — shown below form on auth failure
+  - Field-level validation errors shown inline
+
+BACKEND LOGIC:
+  - POST to Supabase Auth: supabase.auth.signInWithPassword({ email, password })
+  - On success: store session token in HTTP-only cookie
+  - Redirect to /dashboard
+  - On failure: return 401 with error message
+
+--------------------------------------------------------------------------------
+SIGNUP SCREEN
+--------------------------------------------------------------------------------
+
+FIELDS:
+  Name:     Full Name
+  Type:     text input
+  Validation: required, 2–100 characters
+
+  Name:     Email
+  Type:     email input
+  Validation: required, valid email format, unique in system
+
+  Name:     Password
+  Type:     password input
+  Validation: required, min 8 chars, at least 1 uppercase, 1 number, 1 symbol
+
+  Name:     Confirm Password
+  Type:     password input
+  Validation: must match Password field exactly
+
+BUTTONS:
+  [Create Account] — submits form
+  [Back to Login]  — navigates to /login
+
+PASSWORD STRENGTH INDICATOR:
+  - Visual bar showing Weak / Fair / Strong / Very Strong
+
+BACKEND LOGIC:
+  - POST to Supabase Auth: supabase.auth.signUp({ email, password, options: { data: { full_name } } })
+  - On signup, insert user profile into `users` table via Supabase trigger
+  - Default role assigned: 'staff'
+  - Confirmation email sent (Supabase Email confirmation flow)
+
+--------------------------------------------------------------------------------
+FORGOT PASSWORD SCREEN
+--------------------------------------------------------------------------------
+
+FIELDS:
+  Name:     Email
+  Type:     email input
+  Validation: required, valid email format
+
+BUTTONS:
+  [Send Reset Link] — triggers password reset email
+
+BACKEND LOGIC:
+  - supabase.auth.resetPasswordForEmail(email)
+  - Supabase sends reset link
+  - User clicks link → directed to /reset-password with token
+  - /reset-password allows new password entry and confirmation
+
+================================================================================
+6.2 SCREEN: DASHBOARD
+================================================================================
+
+ROUTE: /dashboard
+
+PURPOSE: Executive and operational overview of current inventory health.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Dashboard" | Date | Refresh button]
+
+  [Row 1: KPI Widgets — 4 cards]
+  [Row 2: Operation Cards — Receipts card | Deliveries card]
+  [Row 3: Charts — Inventory Trend | Warehouse Utilization]
+
+--------------------------------------------------------------------------------
+ROW 1: KPI WIDGETS
+--------------------------------------------------------------------------------
+
+WIDGET 1 — TOTAL PRODUCTS IN STOCK
+  Display:  Total number of unique SKUs with quantity > 0
+  Icon:     Package icon
+  Color:    Blue
+  Click:    Navigates to /inventory
+
+WIDGET 2 — LOW STOCK ALERTS
+  Display:  Count of products where on_hand_quantity <= reorder_level
+  Icon:     Alert triangle icon
+  Color:    Red if > 0, Green if 0
+  Click:    Navigates to /inventory filtered by "low stock"
+
+WIDGET 3 — PENDING RECEIPTS
+  Display:  Count of receipts with status = 'Ready' (scheduled but not Done)
+  Icon:     Inbox icon
+  Color:    Orange
+  Click:    Navigates to /operations/receipts filtered by status=Ready
+
+WIDGET 4 — PENDING DELIVERIES
+  Display:  Count of deliveries with status = 'Waiting' or 'Ready'
+  Icon:     Truck icon
+  Color:    Purple
+  Click:    Navigates to /operations/deliveries filtered by pending
+
+--------------------------------------------------------------------------------
+ROW 2: OPERATION CARDS
+--------------------------------------------------------------------------------
+
+RECEIPTS CARD:
+  Title: Receipts (Incoming Inventory)
+  Metrics shown:
+    - Total receipts this month
+    - Waiting (Draft status)
+    - Late (status != Done AND scheduled_date < today)
+  Button: [View All Receipts] → /operations/receipts
+
+DELIVERIES CARD:
+  Title: Deliveries (Outgoing Inventory)
+  Metrics shown:
+    - Total deliveries this month
+    - Waiting (Draft or Waiting status)
+    - Late (status != Done AND scheduled_date < today)
+  Button: [View All Deliveries] → /operations/deliveries
+
+--------------------------------------------------------------------------------
+ROW 3: CHARTS
+--------------------------------------------------------------------------------
+
+CHART 1 — INVENTORY TREND (Line Chart)
+  X-axis:   Last 30 days (daily)
+  Y-axis:   Total stock quantity across all products
+  Data:     Derived from stock_moves table (cumulative net stock per day)
+  Library:  Recharts LineChart
+
+CHART 2 — WAREHOUSE UTILIZATION (Bar Chart or Donut Chart)
+  Shows:    Each warehouse as a segment/bar
+  Metric:   % of capacity used (current stock volume / max capacity)
+  Color:    Green <60%, Yellow 60–85%, Red >85%
+  Click:    Bar navigates to that warehouse's location grid
+
+--------------------------------------------------------------------------------
+BACKEND LOGIC
+--------------------------------------------------------------------------------
+
+API Calls on Page Load:
+  GET /api/dashboard/kpis
+    Returns: { total_products, low_stock_count, pending_receipts, pending_deliveries }
+
+  GET /api/dashboard/operations-summary
+    Returns: { receipts: { total, waiting, late }, deliveries: { total, waiting, late } }
+
+  GET /api/dashboard/inventory-trend?days=30
+    Returns: [{ date: "2024-01-01", total_quantity: 1200 }, ...]
+
+  GET /api/dashboard/warehouse-utilization
+    Returns: [{ warehouse_id, name, utilization_pct }, ...]
+
+Realtime Subscription:
+  Subscribe to Supabase Realtime on `stock_moves` table
+  On INSERT → refresh KPI widgets automatically
+
+================================================================================
+6.3 SCREEN: PRODUCT MANAGEMENT
+================================================================================
+
+ROUTE: /products
+
+PURPOSE: Define and manage the product catalog. Products are the items tracked
+in inventory but do not themselves hold stock — stock is tracked in inventory_stock.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Products" | [+ Add Product] button | Search bar]
+  [Filter bar: Category | Unit of Measure]
+  [Products Table]
+
+--------------------------------------------------------------------------------
+PRODUCTS TABLE COLUMNS
+--------------------------------------------------------------------------------
+
+  Column 1:  Product Name
+  Column 2:  SKU Code
+  Column 3:  Category
+  Column 4:  Unit of Measure (e.g., pcs, kg, liters)
+  Column 5:  Unit Price
+  Column 6:  On Hand Quantity (read-only, from inventory_stock)
+  Column 7:  Available Quantity (read-only, computed)
+  Column 8:  Actions (Edit | Archive)
+
+STOCK QUANTITY DEFINITIONS:
+  On Hand Quantity:   Total physical quantity currently in warehouse.
+                      Formula: SUM(inventory_stock.on_hand_qty) for this product.
+
+  Available Quantity: Stock available for fulfillment.
+                      Formula: On Hand - Qty reserved for pending delivery orders.
+                      A product can be On Hand but not Available if it is already
+                      allocated to a Waiting delivery order.
+
+--------------------------------------------------------------------------------
+ADD / EDIT PRODUCT FORM (Modal or Side Panel)
+--------------------------------------------------------------------------------
+
+FIELDS:
+  Product Name       text        required, 2–200 chars, unique
+  SKU Code           text        required, unique, auto-generated or user-entered
+                                 Format: can be alphanumeric, e.g. SP-00123
+  Category           select      required, from predefined categories table
+                                 User can also create new category inline
+  Unit of Measure    select      pcs / kg / liters / boxes / meters / other
+  Unit Price         decimal     required, >= 0, currency format
+  Reorder Level      integer     optional, default 0. Used for low-stock alerts
+  Description        textarea    optional, product description
+  Is Active          toggle      default ON; archiving sets to false
+
+BUTTONS:
+  [Save]     [Cancel]
+
+VALIDATION:
+  - SKU must be unique across all products
+  - Unit Price must be a valid decimal
+  - Product Name cannot be blank
+
+BACKEND LOGIC:
+  POST /api/products        → INSERT into products table
+  PUT  /api/products/:id    → UPDATE product record
+  GET  /api/products        → SELECT with pagination, search, filter
+  DELETE /api/products/:id  → Soft delete (set is_active = false)
+
+SKU AUTO-GENERATION:
+  If user leaves SKU blank, generate using: SP-{YEAR}{5-digit sequence}
+  Example: SP-2024-00001
+
+================================================================================
+6.4 SCREEN: INVENTORY STOCK VIEW
+================================================================================
+
+ROUTE: /inventory
+
+PURPOSE: Show current stock levels for all products and allow manual stock
+adjustments with full audit trail.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Inventory" | [Adjust Stock] button | Search | Filter by Warehouse]
+  [Inventory Table]
+
+--------------------------------------------------------------------------------
+INVENTORY TABLE COLUMNS
+--------------------------------------------------------------------------------
+
+  Column 1:  Product Name
+  Column 2:  SKU
+  Column 3:  Warehouse
+  Column 4:  Location
+  Column 5:  Unit Cost
+  Column 6:  On Hand Quantity
+  Column 7:  Available Quantity
+  Column 8:  Reserved Quantity  (allocated to pending deliveries)
+  Column 9:  Status (Normal / Low Stock / Out of Stock)
+  Column 10: Actions [Adjust]
+
+STATUS LOGIC:
+  Out of Stock:  on_hand_qty = 0
+  Low Stock:     on_hand_qty > 0 AND on_hand_qty <= reorder_level
+  Normal:        on_hand_qty > reorder_level
+
+--------------------------------------------------------------------------------
+STOCK ADJUSTMENT MODAL
+--------------------------------------------------------------------------------
+
+Triggered by: [Adjust] button per row
+
+FIELDS:
+  Product        display only (pre-filled)
+  Current Qty    display only (pre-filled)
+  Adjustment Type:
+                 select: Add / Remove / Set Absolute Value
+  Quantity       integer, required, > 0
+  Reason         select:
+                   - Physical count correction
+                   - Damage / Loss
+                   - Initial stock entry
+                   - Supplier correction
+                   - Other
+  Notes          textarea, optional
+
+BUTTONS:
+  [Confirm Adjustment]  [Cancel]
+
+BACKEND LOGIC:
+  POST /api/inventory/adjust
+    Body: { product_id, warehouse_id, location_id, adjustment_type, qty, reason, notes }
+    
+    Server logic:
+      1. Compute new quantity based on adjustment_type
+      2. UPDATE inventory_stock.on_hand_qty
+      3. INSERT into stock_moves:
+           {
+             reference: "ADJ/YYYY/NNNN",
+             move_type: "adjustment",
+             product_id,
+             from_location_id: null,
+             to_location_id: location_id,
+             quantity: adjustment_qty,
+             reason,
+             notes,
+             performed_by: current_user_id
+           }
+      4. Return updated inventory record
+
+CONSTRAINTS:
+  - Remove adjustments cannot reduce quantity below 0
+  - All adjustments create a stock_moves record (full audit trail)
+
+================================================================================
+6.5 SCREEN: WAREHOUSE MANAGEMENT
+================================================================================
+
+ROUTE: /warehouses
+
+PURPOSE: Define physical warehouses. Each warehouse has locations (racks/shelves)
+and holds inventory stock.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Warehouses" | [+ Add Warehouse] button]
+  [Warehouse Cards Grid or Table]
+
+Each warehouse card shows:
+  - Warehouse Name
+  - Code
+  - Address
+  - Number of Locations
+  - Total Stock Items
+  - Utilization % (bar indicator)
+  - [View Map] [Edit] [View Locations] buttons
+
+--------------------------------------------------------------------------------
+ADD / EDIT WAREHOUSE FORM
+--------------------------------------------------------------------------------
+
+FIELDS:
+  Warehouse Name    text      required, 2–100 chars, unique
+  Warehouse Code    text      required, unique, e.g. WH-01
+  Address Line 1    text      required
+  Address Line 2    text      optional
+  City              text      required
+  State             text      required
+  Country           select    required
+  Postal Code       text      required
+  Max Capacity      integer   optional, used for utilization % calculation (in units)
+  Is Active         toggle    default ON
+
+BUTTONS:
+  [Save]  [Cancel]
+
+BACKEND:
+  GET    /api/warehouses           → list all warehouses for current org
+  POST   /api/warehouses           → create warehouse
+  PUT    /api/warehouses/:id       → update
+  DELETE /api/warehouses/:id       → soft delete (check no active stock first)
+
+CONSTRAINT:
+  Cannot delete a warehouse that has inventory stock records with qty > 0.
+  Show warning: "This warehouse has active stock. Transfer stock before archiving."
+
+================================================================================
+6.6 SCREEN: LOCATION MANAGEMENT
+================================================================================
+
+ROUTE: /locations
+
+PURPOSE: Locations are named storage areas within warehouses — racks, shelves,
+bins, zones. Inventory is tracked at location level.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Locations" | [+ Add Location] button | Filter by Warehouse dropdown]
+  [Locations Table]
+
+TABLE COLUMNS:
+  Location Name     (e.g., Rack A1, Cold Storage, Zone B)
+  Location Code     (e.g., WH01-A1, WH01-B3)
+  Warehouse         (warehouse name)
+  Type              (Rack / Shelf / Zone / Bin / Cold Storage / Custom)
+  Products Stored   (count of distinct products)
+  Utilization       (% of max capacity used)
+  Actions           [Edit] [View Inventory] [Delete]
+
+--------------------------------------------------------------------------------
+ADD / EDIT LOCATION FORM
+--------------------------------------------------------------------------------
+
+FIELDS:
+  Location Name     text      required, 2–100 chars
+  Location Code     text      required, unique within warehouse
+                              Auto-format suggestion: {WarehouseCode}-{Identifier}
+                              Example: WH01-A1
+  Warehouse         select    required, from warehouses table
+  Location Type     select    Rack / Shelf / Bin / Zone / Cold Storage / Custom
+  Max Capacity      integer   optional, in units, used for visual map color coding
+  Description       textarea  optional
+  Row               integer   optional, grid row for visual map (1-based)
+  Column            integer   optional, grid col for visual map (1-based)
+  Is Active         toggle    default ON
+
+NOTE ON ROW/COLUMN:
+  The Row and Column fields define the location's position on the visual warehouse
+  map grid. When adding locations, warehouse staff assign each rack a grid position.
+  The visual map (Screen 6.10) renders locations at these coordinates.
+
+BACKEND:
+  GET    /api/locations?warehouse_id=X    → list with filters
+  POST   /api/locations                   → create
+  PUT    /api/locations/:id               → update
+  DELETE /api/locations/:id               → soft delete if no stock present
+
+================================================================================
+6.7 SCREEN: RECEIPTS (INCOMING INVENTORY)
+================================================================================
+
+ROUTE: /operations/receipts
+
+PURPOSE: Manage incoming stock from suppliers. Creating and validating a receipt
+increases inventory stock quantities.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Receipts" | [+ New Receipt] button | Search | Filter by Status]
+  [Receipts Table]
+
+TABLE COLUMNS:
+  Reference       (WH/IN/0001)
+  Supplier
+  Responsible User
+  Scheduled Date
+  Status          (Draft / Ready / Done)
+  Total Items
+  Actions         [View] [Edit] [Validate] [Cancel]
+
+STATUS LIFECYCLE:
+  DRAFT  →  READY  →  DONE
+  
+  DRAFT:   Initial state. Can be edited. No stock change.
+  READY:   Supplier confirmed. Awaiting physical receipt. No stock change yet.
+  DONE:    Goods physically received and validated.
+           ON TRANSITION TO DONE: stock quantities are increased.
+
+--------------------------------------------------------------------------------
+RECEIPT DETAIL / CREATE FORM
+--------------------------------------------------------------------------------
+
+HEADER FIELDS:
+  Reference Number   auto-generated: WH/IN/{4-digit sequence}
+                     e.g., WH/IN/0001, WH/IN/0002
+                     Sequence resets annually or is global — team's choice
+  Supplier           text input (free text or linked contacts table)
+  Responsible User   user select, defaults to current user
+  Scheduled Date     date picker, required
+  Destination WH     select from warehouses
+  Destination Location select from locations filtered by warehouse
+  Notes              textarea, optional
+
+PRODUCT LINE TABLE:
+  Each line contains:
+    Product          select from products (searchable dropdown)
+    Expected Qty     integer, required, > 0
+    Received Qty     integer, editable only when status = Ready → Done transition
+    Unit Cost        decimal, optional (overrides product default)
+    Lot Number       text, optional (for traceability)
+
+  [+ Add Product Line] button
+  [Remove Line]       per-row button
+
+ACTION BUTTONS:
+  [Save Draft]           → saves with status = Draft
+  [Mark Ready]           → changes status to Ready
+  [Validate Receipt]     → changes status to Done, triggers stock increase
+  [Cancel]               → cancels receipt, status = Cancelled (if not Done)
+
+VALIDATION ON "VALIDATE RECEIPT":
+  1. All product lines must have Received Qty > 0
+  2. Confirm dialog: "Validating this receipt will increase stock for X products.
+     Are you sure?"
+  3. On confirm:
+     a. For each product line:
+        - UPDATE inventory_stock: on_hand_qty += received_qty
+          WHERE product_id = line.product_id AND location_id = destination_location_id
+          If no row exists: INSERT new inventory_stock row with that qty
+     b. INSERT stock_moves record for each line:
+          {
+            reference: receipt.reference,
+            move_type: "receipt",
+            product_id,
+            from_location_id: null,  (external / supplier)
+            to_location_id: destination_location_id,
+            quantity: received_qty,
+            performed_by: current_user_id,
+            receipt_id: receipt.id
+          }
+     c. UPDATE receipts.status = 'done'
+     d. UPDATE receipts.done_date = NOW()
+
+REFERENCE AUTO-GENERATION (DB Trigger or API Logic):
+  On INSERT into receipts table, if reference is null:
+    SELECT MAX(sequence_number) + 1 FROM receipts WHERE YEAR(created_at) = YEAR(NOW())
+    Format as WH/IN/{YYYY}/{padded 4-digit number}
+
+================================================================================
+6.8 SCREEN: DELIVERY ORDERS (OUTGOING INVENTORY)
+================================================================================
+
+ROUTE: /operations/deliveries
+
+PURPOSE: Manage outgoing shipments to customers or internal transfers. Validating
+a delivery decreases inventory stock.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Delivery Orders" | [+ New Delivery] button | Search | Filter by Status]
+  [Deliveries Table]
+
+TABLE COLUMNS:
+  Reference         (WH/OUT/0001)
+  Delivery Address  / Customer
+  Responsible User
+  Scheduled Date
+  Status            (Draft / Waiting / Ready / Done)
+  Total Items
+  Actions           [View] [Edit] [Validate] [Cancel]
+
+STATUS LIFECYCLE:
+  DRAFT  →  WAITING  →  READY  →  DONE
+
+  DRAFT:    Initial state. Can be edited. No stock reservation.
+  WAITING:  Stock reserved (quantity subtracted from Available, not On Hand).
+            If stock insufficient when moving to Waiting, alert is shown.
+  READY:    Goods picked and ready for shipment.
+  DONE:     Goods shipped. On Hand quantity decreased.
+
+STOCK RESERVATION MECHANISM:
+  When status moves to WAITING:
+    For each line: decrease inventory_stock.available_qty by ordered_qty
+    (available_qty = on_hand_qty - reserved_qty)
+    reserved_qty += ordered_qty in a separate reservations table or computed field
+
+  When status moves to DONE:
+    For each line: decrease inventory_stock.on_hand_qty by shipped_qty
+    Release reservation
+
+INSUFFICIENT STOCK ALERT:
+  When creating or transitioning to WAITING:
+    If any product line has ordered_qty > available_qty:
+      Show warning: "Insufficient stock for [Product Name].
+                     Available: X units. Ordered: Y units.
+                     Proceeding will create a negative reservation."
+      Options: [Proceed Anyway] [Adjust Qty] [Cancel]
+
+--------------------------------------------------------------------------------
+DELIVERY DETAIL / CREATE FORM
+--------------------------------------------------------------------------------
+
+HEADER FIELDS:
+  Reference Number   auto-generated: WH/OUT/{4-digit sequence}
+  Customer / Address text input or select from contacts
+  Delivery Address   text area, required
+  Responsible User   user select, defaults to current
+  Scheduled Date     date picker, required
+  Source Warehouse   select from warehouses
+  Source Location    select from locations
+  Notes              textarea, optional
+
+PRODUCT LINE TABLE:
+  Product            select from products (searchable)
+  Ordered Qty        integer, required, > 0
+  Shipped Qty        integer, editable only at DONE transition
+  Available Qty      display only (real-time from inventory)
+  Unit Price         decimal, from product defaults
+
+  [+ Add Product Line]  [Remove Line]
+
+BUTTONS:
+  [Save Draft]         → status = Draft
+  [Confirm Order]      → status = Waiting (reserves stock)
+  [Mark Ready]         → status = Ready
+  [Validate Delivery]  → status = Done, triggers stock decrease
+  [Cancel Delivery]    → Cancelled, releases reservations
+
+VALIDATE DELIVERY LOGIC:
+  1. Confirm dialog: "Validating will reduce stock for X products."
+  2. For each line:
+     a. Check on_hand_qty >= shipped_qty; if not, block or warn
+     b. UPDATE inventory_stock: on_hand_qty -= shipped_qty
+     c. Release reservation
+     d. INSERT stock_moves:
+          {
+            reference: delivery.reference,
+            move_type: "delivery",
+            product_id,
+            from_location_id: source_location_id,
+            to_location_id: null,  (external / customer)
+            quantity: shipped_qty * -1,  (negative = outbound)
+            performed_by: current_user_id,
+            delivery_id: delivery.id
+          }
+  3. UPDATE deliveries.status = 'done'
+
+================================================================================
+6.9 SCREEN: MOVE HISTORY
+================================================================================
+
+ROUTE: /move-history
+
+PURPOSE: Complete audit log of all inventory movements — receipts, deliveries,
+adjustments, transfers. Immutable records.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Move History" | Export button | Search | Date Range Filter]
+  [Filter bar: Move Type | Product | Warehouse | User]
+  [Move History Table]
+
+TABLE COLUMNS:
+  Reference         (WH/IN/0001, WH/OUT/0002, ADJ/2024/0005, etc.)
+  Date              Timestamp of operation
+  Move Type         Receipt / Delivery / Adjustment / Transfer
+  Product           Product name + SKU
+  Contact           Supplier (for receipts) / Customer (for deliveries)
+  From Location     Location name or "External" for supplier source
+  To Location       Location name or "External" for customer destination
+  Quantity          Signed integer (+/- indicating direction)
+  Performed By      User name
+  Status            Done / Cancelled
+
+INTERACTIONS:
+  - Click row → opens detail modal with full operation context
+  - Export button → downloads filtered results as CSV or Excel
+  - Search searches across reference, product name, contact
+  - Date range picker: today / this week / this month / custom range
+
+FILTERS:
+  Move Type:    All / Receipt / Delivery / Adjustment / Transfer
+  Product:      Searchable dropdown
+  Warehouse:    Dropdown
+  User:         Dropdown (who performed the operation)
+
+BACKEND:
+  GET /api/stock-moves?
+    page=1&
+    limit=50&
+    move_type=receipt&
+    product_id=xxx&
+    from_date=2024-01-01&
+    to_date=2024-12-31&
+    warehouse_id=xxx
+
+  Returns paginated stock_moves with joined product, user, location data.
+
+================================================================================
+6.10 SCREEN: VISUAL WAREHOUSE MAP
+================================================================================
+
+ROUTE: /warehouses/:id/map
+
+PURPOSE: Interactive grid visualization of a warehouse showing rack/location
+positions with color-coded utilization. Enables quick visual assessment of
+warehouse capacity and product locations.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "{Warehouse Name} — Visual Map"]
+  [Toolbar: Zoom In | Zoom Out | Legend | Filter by Product]
+  [Grid Canvas — main area]
+  [Side Panel — opens when rack is clicked, shows rack inventory detail]
+
+--------------------------------------------------------------------------------
+GRID LAYOUT LOGIC
+--------------------------------------------------------------------------------
+
+GRID CONSTRUCTION:
+  1. Query all locations for the warehouse that have (row, column) coordinates set.
+  2. Determine grid dimensions:
+       max_row = MAX(location.row)
+       max_col = MAX(location.col)
+       Grid size = max_row × max_col
+  3. Render CSS Grid with max_row rows and max_col columns.
+  4. Place each location tile at grid position [row][col].
+  5. Empty grid cells (no location assigned) render as empty/gray tiles.
+
+TILE RENDERING:
+  Each location tile shows:
+    - Location Code (e.g., A1, B3) centered
+    - Utilization percentage small text below code
+    - Color background based on utilization
+
+COLOR-CODING LOGIC:
+  Utilization = (current_stock_units / location.max_capacity) * 100
+
+  Green   (#22c55e)  — 0% to 59%     (Low Utilization)
+  Yellow  (#eab308)  — 60% to 84%    (Medium Utilization)
+  Red     (#ef4444)  — 85% to 100%   (High Utilization)
+  Gray    (#94a3b8)  — No max_capacity defined or empty
+
+  If location.max_capacity is null:
+    Color based on product count instead:
+      0 products:       Gray
+      1–5 products:     Green
+      6–15 products:    Yellow
+      16+ products:     Red
+
+HOVER BEHAVIOR:
+  On hover over a tile:
+    Show tooltip with:
+      - Location Name
+      - Number of distinct products stored
+      - Total units stored
+      - Top 3 products by quantity
+
+CLICK BEHAVIOR:
+  On click of a tile:
+    Open right side panel:
+      - Location Name & Code
+      - Total products: X
+      - Inventory table:
+          Product Name | SKU | Quantity | Last Movement Date
+      - [View Full Inventory] button → /inventory?location_id=xxx
+      - [Add Stock to Location] button → opens adjustment modal
+
+ZOOM:
+  - Zoom In / Out controls scale the tile sizes (CSS transform: scale())
+  - Default tile size: 80px × 80px
+  - Min tile: 40px, Max tile: 160px
+
+LEGEND:
+  Small legend box showing:
+    ■ Green  — Low Utilization (< 60%)
+    ■ Yellow — Medium Utilization (60–84%)
+    ■ Red    — High Utilization (≥ 85%)
+    □ Gray   — Empty / Undefined
+
+BACKEND:
+  GET /api/warehouses/:id/map
+  Returns:
+  {
+    warehouse: { id, name, max_row, max_col },
+    locations: [
+      {
+        id, name, code, row, col, max_capacity,
+        current_stock_units,
+        utilization_pct,
+        top_products: [{ product_id, name, quantity }]
+      }
+    ]
+  }
+
+  Data derived from:
+    SELECT
+      l.id, l.name, l.code, l.row, l.col, l.max_capacity,
+      SUM(s.on_hand_qty) AS current_stock_units,
+      ROUND(SUM(s.on_hand_qty) / NULLIF(l.max_capacity, 0) * 100, 1) AS utilization_pct
+    FROM locations l
+    LEFT JOIN inventory_stock s ON s.location_id = l.id
+    WHERE l.warehouse_id = :warehouse_id
+    GROUP BY l.id
+
+================================================================================
+6.11 SCREEN: AUTOMATION RULES
+================================================================================
+
+ROUTE: /automation
+
+PURPOSE: Define IF-THEN rules that automatically trigger alerts, notifications,
+or system actions based on inventory conditions. Rules execute via background
+workers every 15 minutes.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "Automation Rules" | [+ Create Rule] button]
+  [Rules Table]
+
+TABLE COLUMNS:
+  Rule Name
+  Condition (human-readable summary)
+  Action (human-readable summary)
+  Status   (Active / Paused)
+  Last Run Timestamp
+  Last Result (Triggered / Not Triggered / Error)
+  Actions  [Edit] [Pause/Resume] [Run Now] [Delete]
+
+--------------------------------------------------------------------------------
+RULE TYPES
+--------------------------------------------------------------------------------
+
+CONDITION OPTIONS:
+  1. Stock Below Threshold
+     Parameters: product (select or "all"), quantity threshold
+     Example: IF [Steel Rods] stock < [50 units]
+
+  2. No Movement for N Days
+     Parameters: product or category, days threshold
+     Example: IF [any product in Finished Goods] has no movement for [30] days
+
+  3. Delivery Overdue
+     Parameters: days overdue threshold
+     Example: IF delivery order is overdue by > [3] days
+
+  4. Receipt Overdue
+     Parameters: days overdue
+     Example: IF receipt is overdue by > [5] days
+
+  5. Warehouse Utilization Threshold
+     Parameters: warehouse, utilization %
+     Example: IF [WH-01] utilization > [85%]
+
+ACTION OPTIONS:
+  1. Send Email Notification
+     Parameters: recipient email(s), subject template, body template
+
+  2. Create In-App Alert
+     Parameters: alert message text, severity (Info / Warning / Critical)
+     Alert appears in dashboard notification center
+
+  3. Mark Product as Slow-Moving
+     Parameters: tag product with "slow_moving" label in products table
+
+  4. Suggest Restock
+     Parameters: creates a draft receipt order for the product
+
+  5. Webhook
+     Parameters: URL, HTTP method, payload template (for integrations)
+
+--------------------------------------------------------------------------------
+RULE CREATION FORM
+--------------------------------------------------------------------------------
+
+FIELDS:
+  Rule Name        text      required, descriptive name
+  Description      textarea  optional
+  Is Active        toggle    default ON
+
+  CONDITION SECTION:
+    Condition Type   select   (from list above)
+    [Dynamic fields based on condition type selected]
+
+  ACTION SECTION:
+    Action Type      select   (from list above)
+    [Dynamic fields based on action type selected]
+
+  SCHEDULE:
+    Run Frequency    select   Every 15 min / Every 1 hour / Daily / Weekly
+                              Default: Every 15 minutes
+
+BUTTONS:
+  [Save Rule]   [Test Rule Now]   [Cancel]
+
+"Test Rule Now" executes the rule immediately and shows result.
+
+--------------------------------------------------------------------------------
+RULE EXECUTION ENGINE (BACKGROUND WORKER)
+--------------------------------------------------------------------------------
+
+TECHNOLOGY: BullMQ with Redis on Railway
+
+WORKER PROCESS:
+  1. BullMQ repeatable job: runs every 15 minutes
+  2. Worker fetches all active rules from automation_rules table
+  3. For each rule:
+     a. Parse condition_config JSON
+     b. Execute appropriate SQL query against Supabase to evaluate condition
+     c. If condition is TRUE:
+          - Execute action_config
+          - INSERT into ai_action_logs: { rule_id, triggered_at, result, action_taken }
+          - Update automation_rules.last_run, last_result
+     d. If condition is FALSE:
+          - Update last_run, last_result = 'not_triggered'
+  4. Handle errors gracefully: log to ai_action_logs, send admin notification on failure
+
+EXAMPLE RULE EXECUTION (Stock Below Threshold):
+  condition_config = { type: "stock_below", product_id: "xxx", threshold: 50 }
+  
+  SQL: SELECT on_hand_qty FROM inventory_stock WHERE product_id = 'xxx'
+  
+  If result.on_hand_qty < 50:
+    Execute action: create in-app alert
+    INSERT alerts (message: "Steel Rods stock is below reorder level: 35 units remain")
+
+================================================================================
+6.12 SCREEN: AI ASSISTANT
+================================================================================
+
+ROUTE: /ai-assistant
+
+PURPOSE: Conversational interface for querying inventory data using natural
+language. Powered by Grok API with RAG (Retrieval-Augmented Generation) using
+FAISS vector store.
+
+--------------------------------------------------------------------------------
+LAYOUT
+--------------------------------------------------------------------------------
+
+  [Header: "AI Assistant — StockPilot Intelligence"]
+  [Suggested Queries — 4-6 chips for common questions]
+  [Chat History — scrollable message feed]
+  [Input Area — text field + Send button + Attach context button]
+
+SUGGESTED QUERY CHIPS:
+  "Which items are below reorder level?"
+  "Where is SKU SP-00123 stored?"
+  "Show movement history for steel rods"
+  "What is our total warehouse utilization?"
+  "Which products have had no movement in 30 days?"
+  "Forecast demand for next month"
+
+--------------------------------------------------------------------------------
+CONVERSATION UI
+--------------------------------------------------------------------------------
+
+Messages rendered as chat bubbles:
+  User messages:  Right-aligned, blue background
+  AI responses:   Left-aligned, white/gray background, with StockPilot logo avatar
+
+AI responses can include:
+  - Plain text answers
+  - Markdown-formatted tables
+  - Numbered lists
+  - Hyperlinks to relevant screens (e.g., "View this product →")
+  - Confidence indicator (when forecast data is involved)
+
+Typing indicator: animated dots while waiting for Grok response.
+
+Session persistence: conversation stored in local state per session.
+  (Does not persist across browser sessions — user starts fresh each visit)
+
+--------------------------------------------------------------------------------
+AI ASSISTANT ARCHITECTURE (RAG PIPELINE)
+--------------------------------------------------------------------------------
+
+STEP 1 — USER SENDS QUESTION:
+  User types: "Which items are low in stock?"
+
+STEP 2 — CONTEXT RETRIEVAL (Two sources):
+
+  Source A — Direct DB Query (Structured Data):
+    API calls Supabase to fetch:
+    - Current inventory_stock with product details (all products)
+    - Recent stock_moves (last 7 days)
+    - Active automation alerts
+    - Pending operations
+
+  Source B — FAISS Semantic Search (RAG):
+    - User question is converted to embedding via Sentence Transformers
+    - FAISS index queried for top-K similar records
+    - Returns relevant historical log entries, past AI conversations,
+      and product descriptions
+
+STEP 3 — CONTEXT ASSEMBLY:
+  System prompt constructed:
+  {
+    role: "system",
+    content: "You are StockPilot AI, an intelligent inventory management assistant.
+              Answer questions based on the following inventory data:
+              
+              CURRENT INVENTORY:
+              [structured data from Supabase]
+              
+              RELEVANT CONTEXT:
+              [FAISS retrieved chunks]
+              
+              Instructions:
+              - Be concise and factual
+              - Format tables using markdown
+              - Provide actionable recommendations
+              - Link to actions when relevant (e.g., 'You can create a receipt for this')
+              - If data is insufficient, say so clearly"
+  }
+
+STEP 4 — GROK API CALL:
+  POST https://api.x.ai/v1/chat/completions
+  {
+    model: "grok-beta",
+    messages: [system_message, ...conversation_history, user_message],
+    stream: true,
+    max_tokens: 1024
+  }
+
+STEP 5 — STREAM RESPONSE:
+  Grok response streamed via Server-Sent Events to frontend.
+  Frontend renders tokens as they arrive (streaming UX).
+
+STEP 6 — LOG INTERACTION:
+  INSERT into ai_action_logs:
+    { user_id, query, response_summary, tokens_used, timestamp }
+
+--------------------------------------------------------------------------------
+FAISS INDEX MANAGEMENT
+--------------------------------------------------------------------------------
+
+INDEX CONTENTS:
+  - All products (name, SKU, description, category) → embedded as text
+  - All locations (name, code, warehouse) → embedded
+  - Stock move records (last 90 days) → embedded as: "{date} {product} moved
+    {qty} from {from_loc} to {to_loc}"
+  - Automation rule descriptions → embedded
+  - Past AI query responses (for few-shot learning) → embedded
+
+EMBEDDING UPDATE:
+  - FAISS index rebuilt nightly via scheduled Python job
+  - New stock_moves added to index in near real-time via API hook
+  - Index stored as FAISS .index file on Render persistent disk
+
+FAISS SERVICE ENDPOINTS:
+  POST /faiss/search   { query_text: string, top_k: 10 }
+  POST /faiss/add      { documents: [{ text, metadata }] }
+  POST /faiss/rebuild  (admin only, triggered nightly)
+
+================================================================================
+6.13 SCREEN: NATURAL LANGUAGE COMMANDS
+================================================================================
+
+ROUTE: /ai-assistant (integrated with AI Assistant, separate command mode tab)
+
+PURPOSE: Allow users to execute inventory operations — creating receipts,
+deliveries, adjustments — using plain English commands. Commands are parsed,
+interpreted, and require explicit confirmation before execution.
+
+--------------------------------------------------------------------------------
+COMMAND EXAMPLES
+--------------------------------------------------------------------------------
+
+"Add receipt of 40 steel rods from supplier Tata"
+"Ship 20 chairs to Delhi client Sharma Furniture"
+"Adjust stock of SKU SP-00456 to 100 units"
+"Transfer 30 kg of wheat flour from WH-01 Rack A1 to WH-01 Rack B2"
+"Create delivery order for 50 laptops to TechCorp Bangalore"
+
+--------------------------------------------------------------------------------
+NLP COMMAND PROCESSING PIPELINE
+--------------------------------------------------------------------------------
+
+STEP 1 — COMMAND DETECTION:
+  When user sends a message to AI Assistant, the system first classifies:
+    - Is this a QUESTION (information query)?
+    - Is this a COMMAND (action execution)?
+
+  Classification prompt sent to Grok:
+    "Classify this user input as either QUESTION or COMMAND, and extract intent:
+     Input: '{user_input}'
+     Respond in JSON: { type: 'question'|'command', intent: string }"
+
+STEP 2 — ENTITY EXTRACTION (Tool Calling):
+  For COMMAND type, Grok is called with tool definitions:
+
+  Tools defined:
+    create_receipt:
+      parameters:
+        product_name: string
+        quantity: number
+        supplier: string
+        scheduled_date: string (optional)
+        warehouse: string (optional)
+
+    create_delivery:
+      parameters:
+        product_name: string
+        quantity: number
+        customer: string
+        delivery_address: string (optional)
+        scheduled_date: string (optional)
+
+    adjust_stock:
+      parameters:
+        product_name: string
+        quantity: number
+        adjustment_type: "add" | "remove" | "set"
+        reason: string
+
+    transfer_stock:
+      parameters:
+        product_name: string
+        quantity: number
+        from_location: string
+        to_location: string
+
+  Grok extracts entities and returns tool_call JSON.
+
+STEP 3 — DISAMBIGUATION:
+  If any required entity is ambiguous or missing:
+    - System prompts user for clarification in chat
+    - Example: "I found 3 products matching 'steel'. Which did you mean?
+                1. Steel Rods (SP-001)
+                2. Steel Plates (SP-042)
+                3. Steel Wire (SP-091)"
+
+STEP 4 — CONFIRMATION DIALOG:
+  MANDATORY before any action execution.
+  Show structured confirmation card:
+
+  ┌────────────────────────────────────────────────────────┐
+  │ CONFIRM ACTION                                         │
+  │                                                        │
+  │ Create Receipt                                         │
+  │   Product:   Steel Rods (SKU: SP-001)                 │
+  │   Quantity:  40 units                                  │
+  │   Supplier:  Tata Steel                                │
+  │   Date:      Today (2024-01-15)                        │
+  │   Warehouse: WH-01 (Main Warehouse)                    │
+  │                                                        │
+  │   [Confirm & Execute]      [Cancel]                    │
+  └────────────────────────────────────────────────────────┘
+
+STEP 5 — EXECUTION:
+  On user clicking [Confirm & Execute]:
+    - System calls appropriate API endpoint
+    - POST /api/receipts or /api/deliveries or /api/inventory/adjust
+    - Returns success response with reference number
+
+STEP 6 — SUCCESS FEEDBACK:
+  AI Assistant responds:
+    "Done! I've created receipt WH/IN/0042 for 40 units of Steel Rods from
+     Tata Steel. View it here → [WH/IN/0042]"
+
+STEP 7 — LOGGING:
+  INSERT into ai_action_logs:
+    { user_id, command_text, intent, entities_extracted, action_taken,
+      reference_generated, confirmed_at, executed_at }
+
+VALIDATION BEFORE EXECUTION:
+  - Product must exist in system (fuzzy match → exact match required)
+  - Quantity must be positive integer
+  - For deliveries: check available stock, alert if insufficient
+  - For transfers: both locations must exist and be in same or different warehouse
+
+================================================================================
+7. DEMAND PREDICTION MODULE
+================================================================================
+
+PURPOSE: Use machine learning to forecast future inventory demand per product,
+enabling proactive purchasing and stock planning.
+
+--------------------------------------------------------------------------------
+7.1 DATA PIPELINE
+--------------------------------------------------------------------------------
+
+INPUT DATA:
+  Source 1: deliveries table + delivery_items
+    - Historical outgoing quantities per product per date
+    - Each validated delivery is a demand data point
+
+  Source 2: stock_moves table
+    - Filtered to move_type = 'delivery' or 'adjustment'
+    - Provides granular movement history
+
+DATA PREPARATION (Python / pandas):
+  1. Query Supabase for all stock_moves of type 'delivery' per product
+  2. Group by product_id and date (daily aggregation)
+  3. Fill missing dates with 0 demand
+  4. Output: time series DataFrame per product:
+       date | product_id | demand_quantity
+
+MINIMUM DATA REQUIREMENT:
+  Prophet requires at least 2 periods of data to make meaningful forecasts.
+  For daily forecasting: minimum 30 days of history recommended.
+  If insufficient data: return message "Insufficient history for forecast"
+
+--------------------------------------------------------------------------------
+7.2 FORECASTING MODELS
+--------------------------------------------------------------------------------
+
+PRIMARY MODEL: Facebook Prophet
+  - Handles seasonality (weekly, yearly patterns)
+  - Robust to missing data
+  - Provides uncertainty intervals (confidence bounds)
+  - Trained per product
+
+  Prophet config:
+    m = Prophet(
+        changepoint_prior_scale=0.05,
+        seasonality_mode='multiplicative',
+        weekly_seasonality=True,
+        yearly_seasonality=True
+    )
+    m.add_country_holidays(country_name='IN')   # India holidays
+    m.fit(df)
+    future = m.make_future_dataframe(periods=30)  # 30-day forecast
+    forecast = m.predict(future)
+
+FALLBACK MODEL: scikit-learn Linear Regression
+  Used when Prophet insufficient (< 30 data points)
+    - Features: day_of_week, week_of_year, month, lag_7day_avg
+    - Target: demand_quantity
+    - Simple trend extrapolation for new products
+
+--------------------------------------------------------------------------------
+7.3 PREDICTION SERVICE API
+--------------------------------------------------------------------------------
+
+Python FastAPI service on Render.
+
+ENDPOINTS:
+
+  GET /predict/product/{product_id}?days=30
+    Returns:
+    {
+      product_id: "xxx",
+      product_name: "Steel Rods",
+      forecast: [
+        { date: "2024-02-01", predicted_demand: 45.2, lower_bound: 30, upper_bound: 62 },
+        { date: "2024-02-02", predicted_demand: 42.1, lower_bound: 28, upper_bound: 59 },
+        ...
+      ],
+      model_used: "prophet",
+      confidence: "high",
+      training_data_points: 180
+    }
+
+  GET /predict/all-products?days=30
+    Returns forecast for all products (batch computation)
+
+  POST /predict/retrain
+    Admin endpoint: triggers model retraining on latest data
+    Retraining scheduled nightly via cron on Render
+
+--------------------------------------------------------------------------------
+7.4 FRONTEND INTEGRATION
+--------------------------------------------------------------------------------
+
+Location: Dashboard → "Demand Forecast" tab, or Product detail page
+
+Display:
+  - Line chart: Actual historical demand (solid line) + Predicted demand (dashed line)
+  - Confidence band shaded area (lower_bound to upper_bound)
+  - Recommendation text: "Based on forecast, reorder [X units] by [date]"
+  - Reorder trigger alert if forecasted demand > current available stock within 14 days
+
+================================================================================
+8. DATABASE SCHEMA
+================================================================================
+
+DATABASE: PostgreSQL via Supabase
+All tables include: created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ
+
+--------------------------------------------------------------------------------
+TABLE: users
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  auth_id         UUID UNIQUE NOT NULL              -- Supabase Auth user ID
+  full_name       VARCHAR(200) NOT NULL
+  email           VARCHAR(200) UNIQUE NOT NULL
+  role            VARCHAR(50) NOT NULL DEFAULT 'staff'
+                  -- Values: 'admin', 'manager', 'staff'
+  is_active       BOOLEAN DEFAULT TRUE
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_users_auth_id ON users(auth_id);
+  CREATE INDEX idx_users_email ON users(email);
+
+--------------------------------------------------------------------------------
+TABLE: warehouses
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  name            VARCHAR(200) NOT NULL
+  code            VARCHAR(50) UNIQUE NOT NULL
+  address_line1   VARCHAR(300)
+  address_line2   VARCHAR(300)
+  city            VARCHAR(100)
+  state           VARCHAR(100)
+  country         VARCHAR(100) DEFAULT 'India'
+  postal_code     VARCHAR(20)
+  max_capacity    INTEGER                           -- optional, in units
+  is_active       BOOLEAN DEFAULT TRUE
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+--------------------------------------------------------------------------------
+TABLE: locations
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  warehouse_id    UUID NOT NULL REFERENCES warehouses(id) ON DELETE RESTRICT
+  name            VARCHAR(200) NOT NULL
+  code            VARCHAR(100) NOT NULL
+  location_type   VARCHAR(50) DEFAULT 'rack'
+                  -- Values: 'rack', 'shelf', 'bin', 'zone', 'cold_storage', 'custom'
+  grid_row        INTEGER                           -- position for visual map
+  grid_col        INTEGER                           -- position for visual map
+  max_capacity    INTEGER                           -- max units storable
+  description     TEXT
+  is_active       BOOLEAN DEFAULT TRUE
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+  CONSTRAINT uq_location_code UNIQUE (warehouse_id, code)
+  CONSTRAINT uq_location_grid UNIQUE (warehouse_id, grid_row, grid_col)
+
+INDEXES:
+  CREATE INDEX idx_locations_warehouse ON locations(warehouse_id);
+
+--------------------------------------------------------------------------------
+TABLE: products
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  name            VARCHAR(300) NOT NULL
+  sku             VARCHAR(100) UNIQUE NOT NULL
+  category        VARCHAR(100)
+  unit_of_measure VARCHAR(50) DEFAULT 'pcs'
+                  -- pcs, kg, liters, boxes, meters, other
+  unit_price      DECIMAL(12,2) DEFAULT 0
+  reorder_level   INTEGER DEFAULT 0
+  description     TEXT
+  is_active       BOOLEAN DEFAULT TRUE
+  tags            TEXT[]                            -- for labels like 'slow_moving'
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_products_sku ON products(sku);
+  CREATE INDEX idx_products_category ON products(category);
+  CREATE INDEX idx_products_name ON products USING GIN (to_tsvector('english', name));
+
+--------------------------------------------------------------------------------
+TABLE: inventory_stock
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  product_id      UUID NOT NULL REFERENCES products(id) ON DELETE RESTRICT
+  warehouse_id    UUID NOT NULL REFERENCES warehouses(id) ON DELETE RESTRICT
+  location_id     UUID REFERENCES locations(id) ON DELETE SET NULL
+  on_hand_qty     INTEGER NOT NULL DEFAULT 0 CHECK (on_hand_qty >= 0)
+  reserved_qty    INTEGER NOT NULL DEFAULT 0 CHECK (reserved_qty >= 0)
+                  -- reserved = allocated to pending delivery orders
+  unit_cost       DECIMAL(12,2)                     -- actual cost of current stock
+  last_movement_at TIMESTAMPTZ
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+  -- Computed: available_qty = on_hand_qty - reserved_qty (in application layer or view)
+
+  CONSTRAINT uq_stock_location UNIQUE (product_id, warehouse_id, location_id)
+
+VIEWS:
+  CREATE VIEW inventory_with_availability AS
+  SELECT
+    s.*,
+    p.name AS product_name, p.sku, p.reorder_level,
+    (s.on_hand_qty - s.reserved_qty) AS available_qty,
+    l.name AS location_name, l.code AS location_code,
+    w.name AS warehouse_name
+  FROM inventory_stock s
+  JOIN products p ON p.id = s.product_id
+  LEFT JOIN locations l ON l.id = s.location_id
+  JOIN warehouses w ON w.id = s.warehouse_id;
+
+INDEXES:
+  CREATE INDEX idx_stock_product ON inventory_stock(product_id);
+  CREATE INDEX idx_stock_warehouse ON inventory_stock(warehouse_id);
+  CREATE INDEX idx_stock_location ON inventory_stock(location_id);
+
+--------------------------------------------------------------------------------
+TABLE: receipts
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  reference       VARCHAR(50) UNIQUE NOT NULL       -- WH/IN/0001
+  supplier        VARCHAR(300)
+  responsible_user_id UUID REFERENCES users(id)
+  warehouse_id    UUID REFERENCES warehouses(id)
+  location_id     UUID REFERENCES locations(id)
+  scheduled_date  DATE NOT NULL
+  done_date       TIMESTAMPTZ
+  status          VARCHAR(20) NOT NULL DEFAULT 'draft'
+                  -- draft, ready, done, cancelled
+  notes           TEXT
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_receipts_status ON receipts(status);
+  CREATE INDEX idx_receipts_scheduled ON receipts(scheduled_date);
+
+--------------------------------------------------------------------------------
+TABLE: receipt_items
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  receipt_id      UUID NOT NULL REFERENCES receipts(id) ON DELETE CASCADE
+  product_id      UUID NOT NULL REFERENCES products(id)
+  expected_qty    INTEGER NOT NULL CHECK (expected_qty > 0)
+  received_qty    INTEGER DEFAULT 0 CHECK (received_qty >= 0)
+  unit_cost       DECIMAL(12,2)
+  lot_number      VARCHAR(100)
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_receipt_items_receipt ON receipt_items(receipt_id);
+  CREATE INDEX idx_receipt_items_product ON receipt_items(product_id);
+
+--------------------------------------------------------------------------------
+TABLE: deliveries
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  reference       VARCHAR(50) UNIQUE NOT NULL       -- WH/OUT/0001
+  customer        VARCHAR(300)
+  delivery_address TEXT
+  responsible_user_id UUID REFERENCES users(id)
+  warehouse_id    UUID REFERENCES warehouses(id)
+  location_id     UUID REFERENCES locations(id)     -- source location
+  scheduled_date  DATE NOT NULL
+  done_date       TIMESTAMPTZ
+  status          VARCHAR(20) NOT NULL DEFAULT 'draft'
+                  -- draft, waiting, ready, done, cancelled
+  notes           TEXT
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_deliveries_status ON deliveries(status);
+  CREATE INDEX idx_deliveries_scheduled ON deliveries(scheduled_date);
+
+--------------------------------------------------------------------------------
+TABLE: delivery_items
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  delivery_id     UUID NOT NULL REFERENCES deliveries(id) ON DELETE CASCADE
+  product_id      UUID NOT NULL REFERENCES products(id)
+  ordered_qty     INTEGER NOT NULL CHECK (ordered_qty > 0)
+  shipped_qty     INTEGER DEFAULT 0 CHECK (shipped_qty >= 0)
+  unit_price      DECIMAL(12,2)
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_delivery_items_delivery ON delivery_items(delivery_id);
+  CREATE INDEX idx_delivery_items_product ON delivery_items(product_id);
+
+--------------------------------------------------------------------------------
+TABLE: stock_moves
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  reference       VARCHAR(100) NOT NULL              -- WH/IN/0001, WH/OUT/0001, ADJ/...
+  move_type       VARCHAR(30) NOT NULL
+                  -- receipt, delivery, adjustment, transfer, return
+  product_id      UUID NOT NULL REFERENCES products(id)
+  from_location_id UUID REFERENCES locations(id)     -- null if external (supplier)
+  to_location_id  UUID REFERENCES locations(id)      -- null if external (customer)
+  quantity        INTEGER NOT NULL                    -- positive = inbound, negative = outbound
+  receipt_id      UUID REFERENCES receipts(id)
+  delivery_id     UUID REFERENCES deliveries(id)
+  performed_by    UUID REFERENCES users(id)
+  reason          VARCHAR(200)
+  notes           TEXT
+  status          VARCHAR(20) DEFAULT 'done'         -- done, cancelled
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+
+  NOTE: stock_moves is append-only. Records are never updated, only inserted.
+        This ensures complete audit trail integrity.
+
+INDEXES:
+  CREATE INDEX idx_moves_product ON stock_moves(product_id);
+  CREATE INDEX idx_moves_type ON stock_moves(move_type);
+  CREATE INDEX idx_moves_created ON stock_moves(created_at DESC);
+  CREATE INDEX idx_moves_receipt ON stock_moves(receipt_id);
+  CREATE INDEX idx_moves_delivery ON stock_moves(delivery_id);
+
+--------------------------------------------------------------------------------
+TABLE: automation_rules
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  name            VARCHAR(200) NOT NULL
+  description     TEXT
+  condition_type  VARCHAR(100) NOT NULL
+                  -- stock_below_threshold, no_movement, delivery_overdue,
+                  -- receipt_overdue, warehouse_utilization
+  condition_config JSONB NOT NULL
+                  -- { "product_id": "xxx", "threshold": 50 }
+  action_type     VARCHAR(100) NOT NULL
+                  -- send_email, create_alert, mark_slow_moving,
+                  -- suggest_restock, webhook
+  action_config   JSONB NOT NULL
+                  -- { "recipients": ["admin@co.com"], "message": "Low stock" }
+  run_frequency   VARCHAR(30) DEFAULT 'every_15_min'
+                  -- every_15_min, hourly, daily, weekly
+  is_active       BOOLEAN DEFAULT TRUE
+  last_run_at     TIMESTAMPTZ
+  last_result     VARCHAR(50)                        -- triggered, not_triggered, error
+  created_by      UUID REFERENCES users(id)
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_rules_active ON automation_rules(is_active);
+
+--------------------------------------------------------------------------------
+TABLE: ai_action_logs
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  user_id         UUID REFERENCES users(id)
+  log_type        VARCHAR(50) NOT NULL               -- ai_query, ai_command, rule_execution
+  query_text      TEXT                               -- user's original input
+  intent          VARCHAR(100)                       -- detected intent
+  entities        JSONB                              -- extracted entities
+  action_taken    VARCHAR(200)                       -- what was executed
+  reference_generated VARCHAR(100)                   -- WH/IN/0042 if created
+  response_summary TEXT
+  tokens_used     INTEGER
+  rule_id         UUID REFERENCES automation_rules(id)
+  execution_status VARCHAR(20) DEFAULT 'success'     -- success, failed, cancelled
+  confirmed_at    TIMESTAMPTZ                        -- when user confirmed action
+  executed_at     TIMESTAMPTZ
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+
+INDEXES:
+  CREATE INDEX idx_ai_logs_user ON ai_action_logs(user_id);
+  CREATE INDEX idx_ai_logs_type ON ai_action_logs(log_type);
+  CREATE INDEX idx_ai_logs_created ON ai_action_logs(created_at DESC);
+
+--------------------------------------------------------------------------------
+TABLE: alerts (in-app notifications)
+--------------------------------------------------------------------------------
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
+  user_id         UUID REFERENCES users(id)          -- null = broadcast to all
+  title           VARCHAR(300) NOT NULL
+  message         TEXT NOT NULL
+  severity        VARCHAR(20) DEFAULT 'info'          -- info, warning, critical
+  source          VARCHAR(50)                         -- automation_rule, ai_command, system
+  source_id       UUID                                -- rule_id or log_id
+  is_read         BOOLEAN DEFAULT FALSE
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+
+--------------------------------------------------------------------------------
+ROW-LEVEL SECURITY POLICIES
+--------------------------------------------------------------------------------
+
+All tables have RLS enabled in Supabase.
+
+Example policy for inventory_stock:
+  -- Users can only see stock for their organization (future multi-tenant)
+  -- Current implementation: all authenticated users can read
+  CREATE POLICY "authenticated_read_inventory"
+    ON inventory_stock FOR SELECT
+    USING (auth.role() = 'authenticated');
+
+  -- Only managers and admins can modify stock
+  CREATE POLICY "manager_update_inventory"
+    ON inventory_stock FOR UPDATE
+    USING (
+      EXISTS (
+        SELECT 1 FROM users
+        WHERE auth_id = auth.uid()
+        AND role IN ('admin', 'manager')
+      )
+    );
+
+================================================================================
+9. API DESIGN
+================================================================================
+
+BASE URL: /api/v1/
+
+All endpoints require:
+  Authorization: Bearer {supabase_jwt_token}
+  Content-Type: application/json
+
+Error Response Format:
+  {
+    "error": {
+      "code": "INSUFFICIENT_STOCK",
+      "message": "Not enough available stock for product SP-001",
+      "details": { "available": 15, "requested": 30 }
+    }
+  }
+
+Success Response Format:
+  {
+    "data": { ... },
+    "meta": { "total": 150, "page": 1, "limit": 50 }  // for lists
+  }
+
+--------------------------------------------------------------------------------
+9.1 AUTHENTICATION ENDPOINTS
+--------------------------------------------------------------------------------
+
+POST /api/auth/login
+  Body: { email: string, password: string }
+  Returns: { user: {...}, session: { access_token, refresh_token } }
+
+POST /api/auth/signup
+  Body: { full_name: string, email: string, password: string }
+  Returns: { user: {...}, message: "Check email to confirm account" }
+
+POST /api/auth/logout
+  Body: none
+  Returns: { message: "Logged out successfully" }
+
+POST /api/auth/reset-password
+  Body: { email: string }
+  Returns: { message: "Password reset email sent" }
+
+GET /api/auth/me
+  Returns: { user: { id, full_name, email, role } }
+
+--------------------------------------------------------------------------------
+9.2 PRODUCT ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/products
+  Query params: page, limit, search, category, is_active
+  Returns: { data: [Product], meta: { total, page, limit } }
+
+POST /api/products
+  Body: { name, sku, category, unit_of_measure, unit_price, reorder_level, description }
+  Returns: { data: Product }
+  Auth: manager, admin
+
+GET /api/products/:id
+  Returns: { data: Product }
+
+PUT /api/products/:id
+  Body: Partial<Product>
+  Returns: { data: Product }
+  Auth: manager, admin
+
+DELETE /api/products/:id
+  Returns: { data: { archived: true } }
+  Auth: admin only
+
+Product Object:
+  {
+    id: uuid,
+    name: string,
+    sku: string,
+    category: string,
+    unit_of_measure: string,
+    unit_price: number,
+    reorder_level: number,
+    description: string,
+    is_active: boolean,
+    on_hand_qty: number,    // joined from inventory_stock
+    available_qty: number   // computed
+  }
+
+--------------------------------------------------------------------------------
+9.3 WAREHOUSE ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/warehouses
+  Returns: { data: [Warehouse] }
+
+POST /api/warehouses
+  Body: { name, code, address_line1, city, state, country, postal_code, max_capacity }
+  Returns: { data: Warehouse }
+  Auth: admin
+
+GET /api/warehouses/:id
+  Returns: { data: Warehouse }
+
+PUT /api/warehouses/:id
+  Body: Partial<Warehouse>
+  Returns: { data: Warehouse }
+  Auth: admin
+
+GET /api/warehouses/:id/map
+  Returns: Warehouse map data (see Section 6.10)
+
+--------------------------------------------------------------------------------
+9.4 LOCATION ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/locations?warehouse_id=xxx
+  Returns: { data: [Location] }
+
+POST /api/locations
+  Body: { warehouse_id, name, code, location_type, grid_row, grid_col, max_capacity }
+  Returns: { data: Location }
+  Auth: manager, admin
+
+GET /api/locations/:id
+  Returns: { data: Location with current stock summary }
+
+PUT /api/locations/:id
+  Body: Partial<Location>
+  Returns: { data: Location }
+
+DELETE /api/locations/:id
+  Validates no stock present before delete
+  Returns: { data: { deleted: true } }
+
+--------------------------------------------------------------------------------
+9.5 INVENTORY ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/inventory
+  Query params: warehouse_id, location_id, product_id, status (normal/low/out),
+                page, limit, search
+  Returns: { data: [InventoryStock with product and location details] }
+
+POST /api/inventory/adjust
+  Body: {
+    product_id: uuid,
+    warehouse_id: uuid,
+    location_id: uuid,
+    adjustment_type: "add" | "remove" | "set",
+    quantity: integer,
+    reason: string,
+    notes: string
+  }
+  Returns: { data: { new_qty: number, stock_move_id: uuid } }
+  Auth: manager, admin
+
+GET /api/inventory/summary
+  Returns: {
+    data: {
+      total_products: number,
+      total_skus: number,
+      low_stock_count: number,
+      out_of_stock_count: number,
+      total_stock_value: number
+    }
+  }
+
+--------------------------------------------------------------------------------
+9.6 RECEIPT ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/receipts
+  Query params: status, from_date, to_date, page, limit, search
+  Returns: { data: [Receipt with items] }
+
+POST /api/receipts
+  Body: {
+    supplier: string,
+    responsible_user_id: uuid,
+    warehouse_id: uuid,
+    location_id: uuid,
+    scheduled_date: date,
+    notes: string,
+    items: [{ product_id, expected_qty, unit_cost, lot_number }]
+  }
+  Returns: { data: Receipt }
+
+GET /api/receipts/:id
+  Returns: { data: Receipt with items and product details }
+
+PUT /api/receipts/:id
+  Body: Partial<Receipt> (only allowed if status = draft or ready)
+  Returns: { data: Receipt }
+
+POST /api/receipts/:id/validate
+  Triggers stock increase and status → done
+  Returns: { data: { receipt: Receipt, stock_moves: [StockMove] } }
+
+POST /api/receipts/:id/mark-ready
+  Changes status: draft → ready
+  Returns: { data: Receipt }
+
+POST /api/receipts/:id/cancel
+  Cancels receipt (if not done)
+  Returns: { data: Receipt }
+
+--------------------------------------------------------------------------------
+9.7 DELIVERY ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/deliveries
+  Query params: status, from_date, to_date, page, limit, search
+  Returns: { data: [Delivery with items] }
+
+POST /api/deliveries
+  Body: {
+    customer: string,
+    delivery_address: string,
+    responsible_user_id: uuid,
+    warehouse_id: uuid,
+    location_id: uuid,
+    scheduled_date: date,
+    notes: string,
+    items: [{ product_id, ordered_qty, unit_price }]
+  }
+  Returns: { data: Delivery }
+
+GET /api/deliveries/:id
+  Returns: { data: Delivery with items, availability status per product }
+
+PUT /api/deliveries/:id
+  Returns: { data: Delivery }
+
+POST /api/deliveries/:id/confirm
+  draft → waiting; reserves stock
+  Returns: { data: { delivery: Delivery, reservations: [...], alerts: [...] } }
+
+POST /api/deliveries/:id/mark-ready
+  waiting → ready
+  Returns: { data: Delivery }
+
+POST /api/deliveries/:id/validate
+  ready → done; decreases stock; creates stock_moves
+  Returns: { data: { delivery: Delivery, stock_moves: [StockMove] } }
+
+POST /api/deliveries/:id/cancel
+  Cancels, releases reservations
+  Returns: { data: Delivery }
+
+--------------------------------------------------------------------------------
+9.8 STOCK MOVES ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/stock-moves
+  Query params: move_type, product_id, warehouse_id, from_date, to_date,
+                performed_by, page, limit, search
+  Returns: { data: [StockMove with product, location, user details] }
+
+GET /api/stock-moves/:id
+  Returns: { data: StockMove }
+
+--------------------------------------------------------------------------------
+9.9 AI ASSISTANT ENDPOINTS
+--------------------------------------------------------------------------------
+
+POST /api/ai/query
+  Body: {
+    message: string,
+    conversation_history: [{ role: "user"|"assistant", content: string }]
+  }
+  Returns: Server-Sent Events stream
+  Each SSE event: { type: "token"|"done"|"error", data: string }
+
+POST /api/ai/command
+  Body: {
+    command_text: string,
+    conversation_history: [...]
+  }
+  Returns: {
+    data: {
+      intent: string,
+      entities: { ... },
+      action_type: string,
+      preview: { ... },      // what will be created/modified
+      requires_confirmation: true
+    }
+  }
+
+POST /api/ai/command/execute
+  Body: {
+    action_type: string,
+    entities: { ... },
+    command_log_id: uuid
+  }
+  Returns: {
+    data: {
+      success: true,
+      reference: "WH/IN/0042",
+      message: "Receipt created successfully"
+    }
+  }
+
+GET /api/ai/logs
+  Returns recent AI interactions for current user
+  Returns: { data: [AIActionLog] }
+
+--------------------------------------------------------------------------------
+9.10 AUTOMATION ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/automation/rules
+  Returns: { data: [AutomationRule] }
+
+POST /api/automation/rules
+  Body: { name, condition_type, condition_config, action_type, action_config,
+          run_frequency }
+  Returns: { data: AutomationRule }
+
+PUT /api/automation/rules/:id
+  Returns: { data: AutomationRule }
+
+DELETE /api/automation/rules/:id
+  Returns: { data: { deleted: true } }
+
+POST /api/automation/rules/:id/run-now
+  Immediately evaluates the rule
+  Returns: { data: { triggered: boolean, result: string } }
+
+POST /api/automation/rules/:id/toggle
+  Toggles is_active
+  Returns: { data: { is_active: boolean } }
+
+--------------------------------------------------------------------------------
+9.11 DASHBOARD ENDPOINTS
+--------------------------------------------------------------------------------
+
+GET /api/dashboard/kpis
+  Returns: {
+    data: {
+      total_products: number,
+      total_stock_value: number,
+      low_stock_count: number,
+      out_of_stock_count: number,
+      pending_receipts: number,
+      pending_deliveries: number
+    }
+  }
+
+GET /api/dashboard/operations-summary
+  Returns: {
+    data: {
+      receipts: { total_this_month, waiting, late },
+      deliveries: { total_this_month, waiting, late }
+    }
+  }
+
+GET /api/dashboard/inventory-trend?days=30
+  Returns: { data: [{ date: string, total_quantity: number }] }
+
+GET /api/dashboard/warehouse-utilization
+  Returns: { data: [{ warehouse_id, name, utilization_pct, stock_units }] }
+
+================================================================================
+10. SECURITY DESIGN
+================================================================================
+
+--------------------------------------------------------------------------------
+10.1 AUTHENTICATION
+--------------------------------------------------------------------------------
+
+MECHANISM: Supabase Auth (JWT-based)
+  - User signs in → Supabase returns access_token (JWT) and refresh_token
+  - Access token stored in memory (not localStorage for security)
+  - Refresh token stored in HTTP-only cookie (inaccessible to JS)
+  - JWT expires in 1 hour; refreshed automatically
+  - On logout: tokens invalidated server-side via Supabase
+
+SESSION MANAGEMENT:
+  - Next.js middleware validates JWT on every protected route
+  - Supabase createServerClient used in middleware to verify session
+  - Unauthenticated requests to /api/* return 401
+  - Unauthenticated page access redirects to /login
+
+--------------------------------------------------------------------------------
+10.2 ROLE-BASED ACCESS CONTROL (RBAC)
+--------------------------------------------------------------------------------
+
+ROLES:
+  admin:    Full access. Can manage users, warehouses, automation, settings.
+  manager:  Can create/edit products, receipts, deliveries, inventory adjustments.
+            Can configure automation rules. Cannot manage users.
+  staff:    Read access to all screens. Can validate receipts and deliveries.
+            Cannot create products or configure automation.
+
+ROLE ENFORCEMENT:
+
+  Layer 1 — API Route Middleware:
+    Every API route checks user role from JWT claims.
+    Helper function:
+      function requireRole(allowedRoles: string[]) {
+        // Verify JWT, extract role, check against allowedRoles
+        // Return 403 if insufficient permission
+      }
+
+  Layer 2 — Supabase RLS:
+    PostgreSQL Row-Level Security policies enforce data access at DB level.
+    Even if API middleware is bypassed, RLS provides defense-in-depth.
+
+  Layer 3 — Frontend UI:
+    Buttons and nav items hidden based on user role.
+    Role stored in React context from /api/auth/me response.
+    Role checks for UI: useRole() hook returns current role.
+
+PERMISSION MATRIX:
+  Feature                    | admin | manager | staff
+  ---------------------------|-------|---------|------
+  View Dashboard             |  ✓    |   ✓     |  ✓
+  View/Search Products       |  ✓    |   ✓     |  ✓
+  Create/Edit Products       |  ✓    |   ✓     |  ✗
+  Delete/Archive Products    |  ✓    |   ✗     |  ✗
+  View Inventory             |  ✓    |   ✓     |  ✓
+  Adjust Stock               |  ✓    |   ✓     |  ✗
+  View Receipts              |  ✓    |   ✓     |  ✓
+  Create/Edit Receipts       |  ✓    |   ✓     |  ✓
+  Validate Receipts          |  ✓    |   ✓     |  ✓
+  Create/Edit Deliveries     |  ✓    |   ✓     |  ✓
+  Validate Deliveries        |  ✓    |   ✓     |  ✓
+  View Warehouses            |  ✓    |   ✓     |  ✓
+  Create/Edit Warehouses     |  ✓    |   ✗     |  ✗
+  Manage Locations           |  ✓    |   ✓     |  ✗
+  View Visual Map            |  ✓    |   ✓     |  ✓
+  Create Automation Rules    |  ✓    |   ✓     |  ✗
+  Use AI Assistant           |  ✓    |   ✓     |  ✓
+  Execute NL Commands        |  ✓    |   ✓     |  ✗
+  Manage Users               |  ✓    |   ✗     |  ✗
+  View Audit Logs            |  ✓    |   ✓     |  ✗
+
+--------------------------------------------------------------------------------
+10.3 AI COMMAND CONFIRMATION (MANDATORY SAFEGUARD)
+--------------------------------------------------------------------------------
+
+PRINCIPLE: No AI-initiated action executes without explicit human approval.
+
+IMPLEMENTATION:
+  Step 1: AI parses command and returns preview (never executes immediately)
+  Step 2: UI renders confirmation dialog with full details of what will happen
+  Step 3: User must click [Confirm & Execute] button
+  Step 4: Only then does /api/ai/command/execute get called
+  Step 5: Both the command_log_id and user session are validated server-side
+
+ADDITIONAL SAFEGUARDS:
+  - Command execution endpoint verifies the log entry exists and is in 'pending' state
+  - Execution logs are written before and after action
+  - Repeated failed execution attempts are rate-limited (5 per minute per user)
+  - High-risk operations (delete, large quantity adjustments) require double confirmation
+
+--------------------------------------------------------------------------------
+10.4 AUDIT LOGGING
+--------------------------------------------------------------------------------
+
+ALL STATE-CHANGING OPERATIONS are logged:
+
+  1. Inventory adjustments → stock_moves table (immutable)
+  2. Receipt validations → stock_moves + receipts.done_date
+  3. Delivery validations → stock_moves + deliveries.done_date
+  4. AI command executions → ai_action_logs
+  5. Automation rule triggers → ai_action_logs
+  6. User login/logout → Supabase Auth logs
+  7. Settings changes → audit_logs table (key-value change log)
+
+AUDIT LOG RETENTION:
+  - stock_moves: permanent (append-only, never deleted)
+  - ai_action_logs: 1 year retention
+  - Supabase Auth logs: per Supabase plan (90 days minimum)
+
+--------------------------------------------------------------------------------
+10.5 ADDITIONAL SECURITY MEASURES
+--------------------------------------------------------------------------------
+
+INPUT VALIDATION:
+  - All API inputs validated with Zod schemas server-side
+  - SQL injection prevention via parameterized queries (Supabase client)
+  - XSS prevention via React's built-in escaping + Content Security Policy headers
+
+RATE LIMITING:
+  - API routes: 100 requests per minute per user
+  - AI endpoints: 20 requests per minute per user
+  - Auth endpoints: 10 attempts per minute per IP (Supabase built-in)
+
+CORS:
+  - next.config.js: allowed origins restricted to vercel.app domain and custom domain
+  - API routes: explicit CORS headers
+
+SECRETS MANAGEMENT:
+  - All API keys in environment variables (never in code)
+  - Vercel environment variables for frontend/backend
+  - Render environment variables for Python services
+  - GROK_API_KEY, SUPABASE_SERVICE_ROLE_KEY never exposed to client
+
+HTTPS:
+  - Enforced by Vercel (frontend + API routes)
+  - Enforced by Render (Python services)
+  - Supabase: HTTPS only
+
+================================================================================
+11. DEPLOYMENT STRATEGY
+================================================================================
+
+--------------------------------------------------------------------------------
+11.1 FRONTEND + NEXT.JS API (VERCEL)
+--------------------------------------------------------------------------------
+
+PLATFORM: Vercel
+REPOSITORY: GitHub (monorepo or separate repos)
+
+DEPLOYMENT STEPS:
+  1. Connect GitHub repository to Vercel project
+  2. Configure environment variables in Vercel dashboard:
+       NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+       NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx
+       SUPABASE_SERVICE_ROLE_KEY=eyJxxx   (server-side only)
+       GROK_API_KEY=xai-xxx
+       FAISS_SERVICE_URL=https://faiss.onrender.com
+       ML_SERVICE_URL=https://ml-service.onrender.com
+  3. Set production branch: main
+  4. Vercel auto-deploys on every push to main
+
+VERCEL CONFIGURATION (vercel.json):
+  {
+    "functions": {
+      "api/**/*.ts": { "maxDuration": 30 }
+    },
+    "headers": [
+      {
+        "source": "/api/(.*)",
+        "headers": [
+          { "key": "X-Frame-Options", "value": "DENY" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
+      }
+    ]
+  }
+
+CUSTOM DOMAIN:
+  Configure custom domain (e.g., app.stockpilot.com) in Vercel dashboard.
+  SSL certificate auto-provisioned by Vercel.
+
+CI/CD PIPELINE:
+  - Pull Requests: Vercel creates preview deployments automatically
+  - Main branch push: automatic production deployment
+  - Rollback: one-click rollback to previous deployment via Vercel dashboard
+
+--------------------------------------------------------------------------------
+11.2 DATABASE (SUPABASE)
+--------------------------------------------------------------------------------
+
+PLATFORM: Supabase (managed PostgreSQL)
+
+SETUP STEPS:
+  1. Create Supabase project at supabase.com
+  2. Run migration SQL files to create all tables
+     (Use Supabase Migrations or run via SQL Editor)
+  3. Enable Row-Level Security on all tables
+  4. Configure Auth settings:
+       - Enable Email/Password auth
+       - Set JWT expiry to 3600 (1 hour)
+       - Configure email templates for confirmation/reset
+  5. Set up Supabase Realtime for stock_moves and alerts tables
+  6. Create database functions and triggers for reference generation
+
+MIGRATION MANAGEMENT:
+  - Use Supabase CLI: supabase migration new <name>
+  - Migration files tracked in /supabase/migrations/ in git
+  - Apply: supabase db push
+
+BACKUPS:
+  - Supabase Pro plan includes daily automated backups
+  - Point-in-time recovery available
+
+--------------------------------------------------------------------------------
+11.3 PYTHON SERVICES (RENDER)
+--------------------------------------------------------------------------------
+
+TWO SERVICES on Render:
+
+SERVICE 1: ML Prediction Service
+  Type:         Web Service
+  Runtime:      Python 3.11
+  Build CMD:    pip install -r requirements.txt
+  Start CMD:    uvicorn main:app --host 0.0.0.0 --port $PORT
+  Environment:  SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+  Disk:         Persistent disk for model storage (Prophet models cached)
+  Scale:        1 instance (free tier for hackathon, scale up in production)
+
+  Nightly retrain:
+    Render Cron Job: 0 2 * * * python retrain.py
+    (Runs at 2 AM daily, fetches latest data, retrains Prophet models)
+
+SERVICE 2: FAISS Vector Search Service
+  Type:         Web Service
+  Runtime:      Python 3.11
+  Build CMD:    pip install -r requirements-faiss.txt
+  Start CMD:    uvicorn faiss_service:app --host 0.0.0.0 --port $PORT
+  Environment:  SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+  Disk:         Persistent disk for FAISS index files
+  Scale:        1 instance
+
+  Requirements files:
+    requirements.txt:
+      fastapi
+      uvicorn
+      prophet
+      scikit-learn
+      pandas
+      numpy
+      supabase
+      sentence-transformers
+
+    requirements-faiss.txt:
+      fastapi
+      uvicorn
+      faiss-cpu
+      sentence-transformers
+      numpy
+      supabase
+
+--------------------------------------------------------------------------------
+11.4 BACKGROUND WORKERS (RAILWAY)
+--------------------------------------------------------------------------------
+
+PLATFORM: Railway
+SERVICE TYPE: Worker (no HTTP port)
+RUNTIME: Node.js 20
+
+SETUP:
+  Procfile: worker: node dist/worker.js
+  Environment:
+    REDIS_URL=redis://xxx.railway.app:6379
+    SUPABASE_URL=xxx
+    SUPABASE_SERVICE_ROLE_KEY=xxx
+    SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS (for email notifications)
+
+Worker runs BullMQ repeatable job:
+  - Every 15 minutes: evaluate all active automation rules
+  - Every 1 hour: check for overdue receipts and deliveries → create alerts
+  - Daily: generate low-stock alert digest email
+
+Redis: Railway provides managed Redis instance.
+
+--------------------------------------------------------------------------------
+11.5 ENVIRONMENT SUMMARY
+--------------------------------------------------------------------------------
+
+  Component              Platform    URL Pattern
+  ---------------------- ----------  ---------------------------------
+  Frontend + API         Vercel      https://stockpilot.vercel.app
+  Database               Supabase    https://xxx.supabase.co
+  ML Service             Render      https://stockpilot-ml.onrender.com
+  FAISS Service          Render      https://stockpilot-faiss.onrender.com
+  Background Worker      Railway     (no HTTP, runs as worker process)
+  Redis Queue            Railway     redis://xxx.railway.app:6379
+  Custom Domain          Vercel      https://app.stockpilot.com
+
+================================================================================
+12. DEVELOPMENT ROADMAP — 48-HOUR HACKATHON PLAN
+================================================================================
+
+TEAM ASSUMPTION: 2–3 developers
+TARGET: Functional MVP demonstrating all core features
+
+--------------------------------------------------------------------------------
+HOUR 0–2: PROJECT SETUP & INFRASTRUCTURE
+--------------------------------------------------------------------------------
+
+TASK 1: Initialize Next.js project
+  npx create-next-app@latest stockpilot --typescript --tailwind --app
+  cd stockpilot
+  npx shadcn-ui@latest init
+
+TASK 2: Install dependencies
+  npm install @supabase/supabase-js @supabase/auth-helpers-nextjs
+  npm install zustand swr recharts lucide-react
+  npm install zod date-fns
+
+TASK 3: Create Supabase project
+  - Go to supabase.com, create new project
+  - Copy SUPABASE_URL and SUPABASE_ANON_KEY
+  - Set up .env.local
+
+TASK 4: Configure Supabase client
+  - Create lib/supabase/client.ts (browser client)
+  - Create lib/supabase/server.ts (server client for API routes)
+  - Create lib/supabase/middleware.ts
+
+TASK 5: Set up project structure
+  /app
+    /(auth)/login/page.tsx
+    /(auth)/signup/page.tsx
+    /(dashboard)/layout.tsx
+    /(dashboard)/dashboard/page.tsx
+    ... (all route pages)
+  /components
+    /ui (shadcn components)
+    /layout (sidebar, header)
+    /features (feature-specific components)
+  /lib
+    /supabase
+    /api (API client functions)
+    /utils
+  /api
+    /auth, /products, /inventory, /receipts, /deliveries, /ai, ...
+
+DELIVERABLE: Running Next.js app with Supabase connected
+
+--------------------------------------------------------------------------------
+HOUR 2–4: DATABASE SCHEMA & SEED DATA
+--------------------------------------------------------------------------------
+
+TASK 1: Run all CREATE TABLE SQL statements in Supabase SQL Editor
+  (All tables from Section 8 of this document)
+
+TASK 2: Create indexes
+
+TASK 3: Enable RLS and add basic policies
+
+TASK 4: Create database triggers:
+  - Auto-generate receipt reference numbers (WH/IN sequence)
+  - Auto-generate delivery reference numbers (WH/OUT sequence)
+  - Auto-update updated_at timestamps
+
+  Reference Generation Trigger:
+    CREATE SEQUENCE receipt_seq START 1;
+    CREATE OR REPLACE FUNCTION set_receipt_reference()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW.reference := 'WH/IN/' || LPAD(nextval('receipt_seq')::text, 4, '0');
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+    CREATE TRIGGER receipt_reference_trigger
+    BEFORE INSERT ON receipts
+    FOR EACH ROW WHEN (NEW.reference IS NULL)
+    EXECUTE FUNCTION set_receipt_reference();
+
+TASK 5: Insert seed data
+  - 2 warehouses
+  - 10 locations (with grid coordinates)
+  - 15 sample products
+  - Initial inventory_stock records
+  - 5 sample receipts (various statuses)
+  - 5 sample deliveries
+
+DELIVERABLE: Database ready with test data
+
+--------------------------------------------------------------------------------
+HOUR 4–8: AUTHENTICATION & LAYOUT
+--------------------------------------------------------------------------------
+
+TASK 1: Build Login page
+  - Form with email + password
+  - Call supabase.auth.signInWithPassword
+  - Redirect to /dashboard on success
+  - Error display
+
+TASK 2: Build Signup page
+  - Form with full name, email, password, confirm password
+  - Password strength indicator
+  - Call supabase.auth.signUp
+
+TASK 3: Build Middleware (middleware.ts)
+  - Protect all /(dashboard) routes
+  - Redirect to /login if not authenticated
+  - Refresh session automatically
+
+TASK 4: Build Dashboard Layout
+  - Sidebar component with navigation items
+  - Header with user menu
+  - Mobile responsive
+
+TASK 5: Build User context (React Context or Zustand)
+  - Store user role
+  - useRole() hook for permission checks
+
+DELIVERABLE: Working auth flow, protected layout
+
+--------------------------------------------------------------------------------
+HOUR 8–16: CORE INVENTORY FEATURES (PHASE 1)
+--------------------------------------------------------------------------------
+
+HOUR 8–10: Products Screen
+  - Products table with search and filter
+  - Add/Edit product modal
+  - API routes: GET/POST/PUT /api/products
+
+HOUR 10–12: Warehouses + Locations Screens
+  - Warehouse list with stats
+  - Location list with grid_row/grid_col fields
+  - API routes for both
+
+HOUR 12–14: Inventory Stock Screen
+  - Inventory table with availability calculation
+  - Stock adjustment modal
+  - API route: GET /api/inventory, POST /api/inventory/adjust
+  - Verify stock_moves record created on adjust
+
+HOUR 14–16: Dashboard KPIs + Charts
+  - 4 KPI widgets
+  - 2 operation cards (Receipts, Deliveries)
+  - Inventory trend line chart
+  - Warehouse utilization bar chart
+  - API routes for dashboard data
+
+DELIVERABLE: Products, Inventory, Warehouse, Dashboard functional
+
+--------------------------------------------------------------------------------
+HOUR 16–24: OPERATIONS (RECEIPTS & DELIVERIES)
+--------------------------------------------------------------------------------
+
+HOUR 16–19: Receipts Screen
+  - Receipt list with status filter
+  - Create receipt form with product line table
+  - Mark Ready → Validate flow
+  - Stock increase on validation
+  - stock_moves insert on validation
+  - API routes: GET/POST /api/receipts, POST /api/receipts/:id/validate
+
+HOUR 19–22: Delivery Orders Screen
+  - Delivery list with status filter
+  - Create delivery form with product line table
+  - Confirm → Mark Ready → Validate flow
+  - Stock availability check on confirm
+  - Stock decrease on validation
+  - Alert on insufficient stock
+  - API routes: GET/POST /api/deliveries, status transition routes
+
+HOUR 22–24: Move History Screen
+  - Table with all stock_moves
+  - Filters: move_type, product, date range
+  - Row detail modal
+  - CSV export button
+  - API route: GET /api/stock-moves
+
+DELIVERABLE: Full receipt/delivery lifecycle working with stock movement
+
+--------------------------------------------------------------------------------
+HOUR 24–30: VISUAL MAP + AUTOMATION
+--------------------------------------------------------------------------------
+
+HOUR 24–27: Visual Warehouse Map
+  - Grid rendering based on location row/col coordinates
+  - Color-coded tiles based on utilization calculation
+  - Hover tooltip with product summary
+  - Click to open side panel with location inventory
+  - API route: GET /api/warehouses/:id/map
+
+HOUR 27–30: Automation Rules Screen
+  - Rules list table
+  - Create rule form (condition + action builder)
+  - Simple rule types: stock_below_threshold, no_movement
+  - Simple actions: create_alert, mark_slow_moving
+  - Toggle active/paused
+  - Manual "Run Now" trigger
+  - API routes: CRUD for /api/automation/rules
+
+  NOTE: For hackathon, BullMQ worker can be simplified to a Vercel cron job
+  (vercel.json cron config) running every 15 minutes to evaluate rules.
+
+DELIVERABLE: Visual map renders, automation rules configurable
+
+--------------------------------------------------------------------------------
+HOUR 30–38: AI ASSISTANT & NL COMMANDS
+--------------------------------------------------------------------------------
+
+HOUR 30–33: AI Assistant UI
+  - Chat interface with message bubbles
+  - Suggested query chips
+  - Typing indicator
+  - Streaming response rendering
+
+HOUR 33–36: AI Backend (Grok API Integration)
+  - POST /api/ai/query route
+  - Fetch inventory context from Supabase
+  - Construct system prompt with inventory data
+  - Call Grok API with streaming
+  - Stream response to frontend via Server-Sent Events
+
+  HACKATHON SIMPLIFICATION for FAISS:
+  For the hackathon, skip full FAISS integration.
+  Instead, directly include ALL inventory data as structured JSON in the
+  Grok context (products list, current stock, recent moves).
+  FAISS can be added post-hackathon for scale.
+
+HOUR 36–38: Natural Language Commands
+  - Command detection (question vs command classification)
+  - Entity extraction via Grok tool calling
+  - Confirmation dialog UI
+  - Execute API route
+  - AI action logging
+
+DELIVERABLE: Conversational AI working for queries and basic commands
+
+--------------------------------------------------------------------------------
+HOUR 38–42: ML PREDICTION SERVICE
+--------------------------------------------------------------------------------
+
+HOUR 38–40: Python FastAPI Service Setup
+  - Initialize FastAPI project in /services/ml-service/
+  - requirements.txt with prophet, scikit-learn, pandas
+  - Supabase client setup (supabase-py)
+  - GET /predict/product/{product_id} endpoint
+
+HOUR 40–42: Prophet Integration
+  - Fetch delivery history from Supabase
+  - Train Prophet model per product
+  - Return 30-day forecast JSON
+  - Frontend chart showing historical + predicted demand
+  - "Predicted demand exceeds stock" warning
+
+  HACKATHON SIMPLIFICATION:
+  If insufficient delivery history (< 30 days), generate synthetic trend
+  data for demonstration. Note this in UI.
+
+DELIVERABLE: Demand forecast chart visible in product detail or dashboard
+
+--------------------------------------------------------------------------------
+HOUR 42–46: POLISH, TESTING & EDGE CASES
+--------------------------------------------------------------------------------
+
+HOUR 42–43: Error Handling
+  - Global error boundary in Next.js
+  - Toast notifications for all success/error states
+  - Loading skeletons for all data-fetching screens
+  - Empty states (no products yet, no receipts, etc.)
+
+HOUR 43–44: Mobile Responsiveness
+  - Test all screens on mobile viewport
+  - Fix sidebar (hamburger menu on mobile)
+  - Fix tables (horizontal scroll or card view on mobile)
+
+HOUR 44–45: End-to-End Testing
+  - Walk through full receipt workflow
+  - Walk through full delivery workflow
+  - Test AI assistant queries
+  - Test visual warehouse map
+  - Verify all stock movements are logged correctly
+
+HOUR 45–46: Performance
+  - Add SWR caching for product and inventory lists
+  - Pagination working on all large lists
+  - Supabase Realtime subscription on dashboard (live KPI updates)
+
+--------------------------------------------------------------------------------
+HOUR 46–48: DEPLOYMENT & DEMO PREP
+--------------------------------------------------------------------------------
+
+HOUR 46–47: Deploy to Production
+  1. Push code to GitHub main branch → Vercel auto-deploys
+  2. Verify environment variables in Vercel dashboard
+  3. Deploy Python service to Render (connect GitHub repo)
+  4. Test production URLs
+
+HOUR 47–48: Demo Script
+  Prepare 5-minute demo walkthrough:
+
+  1. Dashboard Overview (30 sec)
+     - Show KPI widgets, low stock alerts
+     - Highlight real-time updates
+
+  2. Create Receipt (60 sec)
+     - Add incoming stock from supplier
+     - Validate receipt → show stock increase in Inventory screen
+
+  3. Create Delivery (60 sec)
+     - Ship stock to customer
+     - Show available qty check
+     - Validate delivery → show stock decrease
+
+  4. Visual Warehouse Map (30 sec)
+     - Show color-coded grid
+     - Hover and click on rack
+
+  5. AI Assistant (60 sec)
+     - Query: "Which items are low in stock?"
+     - Command: "Add receipt of 40 steel rods from Tata"
+     - Show confirmation dialog → execute
+
+  6. Demand Forecast (30 sec)
+     - Show forecast chart for a product
+     - Highlight predicted demand vs current stock
+
+  7. Automation Rules (30 sec)
+     - Show configured rule
+     - Run Now → show triggered alert
+
+--------------------------------------------------------------------------------
+POST-HACKATHON ROADMAP
+--------------------------------------------------------------------------------
+
+WEEK 1–2: Production Hardening
+  - Implement FAISS vector search properly
+  - Multi-tenant support (organizations table)
+  - Email notifications (SendGrid or Resend)
+  - Full BullMQ worker setup on Railway
+  - Comprehensive unit and integration tests
+
+WEEK 3–4: Enhanced Features
+  - Barcode/QR code scanning support
+  - Mobile app (React Native or PWA)
+  - Advanced reporting and CSV/Excel exports
+  - Supplier and customer contacts management
+  - Batch import products via CSV
+
+MONTH 2: Enterprise Features
+  - Multi-warehouse transfers
+  - Lot/batch traceability
+  - FIFO/LIFO costing methods
+  - Purchase order management
+  - Integration webhooks (ERP, accounting systems)
+  - Custom report builder
+  - API access for third-party integration
+
+MONTH 3+: Scale & Intelligence
+  - Full Prophet retraining pipeline (automated)
+  - A/B testing for AI assistant responses
+  - Advanced warehouse optimization suggestions
+  - IoT sensor integration (weight sensors, RFID)
+  - Voice command support
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+
+Document: StockPilot PRD v1.0
+Prepared for: Engineering Team, Hackathon Build
+Classification: Internal — Development Use
+Total Screens: 13
+Total API Endpoints: 50+
+Total Database Tables: 11
+Estimated Build Time (MVP): 48 hours
+Full Production Estimate: 8–12 weeks
+
+================================================================================
